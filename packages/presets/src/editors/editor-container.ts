@@ -244,10 +244,6 @@ export class AffineEditorContainer
       this.mode === 'page'
         ? html`
             <div class="affine-page-viewport">
-              <doc-title .doc=${this.doc}></doc-title>
-
-              <doc-meta-tags .doc=${this.doc}></doc-meta-tags>
-
               <page-editor
                 .doc=${this.doc}
                 .specs=${this._pageSpecs}
