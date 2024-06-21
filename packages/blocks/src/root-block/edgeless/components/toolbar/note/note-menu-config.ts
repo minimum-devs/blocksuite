@@ -21,10 +21,7 @@ export const NOTE_MENU_ITEMS = BLOCKHUB_TEXT_ITEMS.concat(BLOCKHUB_LIST_ITEMS)
   .map(item => {
     return {
       icon: item.icon,
-      tooltip:
-        item.type !== 'text'
-          ? item.tooltip.replace('Drag/Click to insert ', '')
-          : 'Text',
+      tooltip: item.name,
       childFlavour: item.flavour as NoteChildrenFlavour,
       childType: item.type,
     } as NoteMenuItem;

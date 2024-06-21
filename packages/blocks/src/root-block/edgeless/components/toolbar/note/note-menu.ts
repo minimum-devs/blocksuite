@@ -2,19 +2,12 @@ import '../../buttons/tool-icon-button.js';
 import '../common/slide-menu.js';
 
 import { css, html, LitElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { AttachmentIcon, LinkIcon } from '../../../../../_common/icons/text.js';
-import {
-  getImageFilesFromLocal,
-  type NoteChildrenFlavour,
-  openFileOrFiles,
-} from '../../../../../_common/utils/index.js';
-import { ImageIcon } from '../../../../../image-block/styles.js';
+import type { NoteChildrenFlavour } from '../../../../../_common/utils/index.js';
 import type { NoteTool } from '../../../controllers/tools/note-tool.js';
 import type { EdgelessTool } from '../../../types.js';
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { NOTE_MENU_ITEMS } from './note-menu-config.js';
 
@@ -51,9 +44,6 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
     }
   `;
 
-  @state()
-  private accessor _imageLoading = false;
-
   override type: EdgelessTool['type'] = 'affine:note';
 
   @property({ attribute: false })
@@ -73,44 +63,6 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
       tip: string;
     }>
   ) => void;
-
-  private async _addImages() {
-    this._imageLoading = true;
-    const imageFiles = await getImageFilesFromLocal();
-    const ids = await this.edgeless.addImages(imageFiles);
-    this._imageLoading = false;
-    this.edgeless.service.tool.setEdgelessTool(
-      { type: 'default' },
-      { elements: ids, editing: false }
-    );
-  }
-
-  private _onHandleLinkButtonClick() {
-    const { insertedLinkType } = this.edgeless.service.std.command.exec(
-      'insertLinkByQuickSearch'
-    );
-
-    insertedLinkType
-      ?.then(type => {
-        if (type) {
-          this.edgeless.service.telemetryService?.track('CanvasElementAdded', {
-            control: 'toolbar:general',
-            page: 'whiteboard editor',
-            module: 'toolbar',
-            type: type.flavour.split(':')[1],
-          });
-          if (type.isNewDoc) {
-            this.edgeless.service.telemetryService?.track('DocCreated', {
-              control: 'toolbar:general',
-              page: 'whiteboard editor',
-              module: 'edgeless toolbar',
-              type: type.flavour.split(':')[1],
-            });
-          }
-        }
-      })
-      .catch(console.error);
-  }
 
   override firstUpdated() {
     this.disposables.add(
@@ -134,53 +86,6 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
       <edgeless-slide-menu>
         <div class="menu-content">
           <!-- add to edgeless -->
-          <div class="button-group-container">
-            <edgeless-tool-icon-button
-              .activeMode=${'background'}
-              .tooltip=${'Image'}
-              @click=${this._addImages}
-              .disabled=${this._imageLoading}
-            >
-              ${ImageIcon}
-            </edgeless-tool-icon-button>
-
-            <edgeless-tool-icon-button
-              .activeMode=${'background'}
-              .tooltip=${getTooltipWithShortcut('Link', '@')}
-              @click=${() => {
-                this._onHandleLinkButtonClick();
-              }}
-            >
-              ${LinkIcon}
-            </edgeless-tool-icon-button>
-
-            <edgeless-tool-icon-button
-              .activeMode=${'background'}
-              .tooltip=${'File'}
-              @click=${async () => {
-                const file = await openFileOrFiles();
-                if (!file) return;
-                await this.edgeless.addAttachments([file]);
-                this.edgeless.service.tool.setEdgelessTool({ type: 'default' });
-                this.edgeless.service.telemetryService?.track(
-                  'CanvasElementAdded',
-                  {
-                    control: 'toolbar:general',
-                    page: 'whiteboard editor',
-                    module: 'toolbar',
-                    segment: 'toolbar',
-                    type: 'attachment',
-                  }
-                );
-              }}
-            >
-              ${AttachmentIcon}
-            </edgeless-tool-icon-button>
-          </div>
-
-          <div class="divider"></div>
-
-          <!-- add to note -->
           <div class="button-group-container">
             ${repeat(
               NOTE_MENU_ITEMS,

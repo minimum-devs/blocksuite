@@ -4,9 +4,9 @@ import { css, html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import {
-  Heading1Icon,
-  LinkIcon,
-  TextIcon,
+  DocumentationTaskIcon,
+  MajorTaskIcon,
+  MinorTaskIcon,
 } from '../../../../../_common/icons/text.js';
 import type { NoteTool } from '../../../controllers/tools/note-tool.js';
 import { DEFAULT_NOTE_BACKGROUND_COLOR } from '../../auto-complete/utils.js';
@@ -214,9 +214,11 @@ export class EdgelessNoteSeniorButton extends EdgelessToolbarToolMixin(
         style="--paper-bg: var(${_noteBg})"
       >
         <div class="paper">${toShapeNotToAdapt}</div>
-        <div class="edgeless-toolbar-note-icon link">${LinkIcon}</div>
-        <div class="edgeless-toolbar-note-icon heading">${Heading1Icon}</div>
-        <div class="edgeless-toolbar-note-icon text">${TextIcon}</div>
+        <div class="edgeless-toolbar-note-icon link">${MajorTaskIcon}</div>
+        <div class="edgeless-toolbar-note-icon heading">${MinorTaskIcon}</div>
+        <div class="edgeless-toolbar-note-icon text">
+          ${DocumentationTaskIcon}
+        </div>
       </div>
     </edgeless-toolbar-button>`;
   }
