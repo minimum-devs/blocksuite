@@ -503,7 +503,7 @@ export class EdgelessRootBlockComponent extends BlockElement<
           width,
           height
         ),
-        displayMode: NoteDisplayMode.EdgelessOnly,
+        displayMode: NoteDisplayMode.DocAndEdgeless,
       },
       parentId,
       noteIndex
