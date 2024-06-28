@@ -30,7 +30,7 @@ export class ParagraphBlockService<
 
   placeholderGenerator: (model: ParagraphBlockModel) => string = model => {
     if (model.type === 'text') {
-      return "Type '/' for commands";
+      return '';
     }
 
     const placeholders = {

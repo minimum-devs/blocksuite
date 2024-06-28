@@ -1689,7 +1689,7 @@ export class AffineDragHandleWidget extends WidgetElement<
     );
 
     return html`
-      <div class="affine-drag-handle-widget">
+      <div class="affine-drag-handle-widget" style="display:none">
         <div class="affine-drag-handle-container">
           <div class="affine-drag-handle-grabber"></div>
         </div>
