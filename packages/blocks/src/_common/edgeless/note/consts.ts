@@ -32,4 +32,4 @@ export const NOTE_SHADOWS = [
 
 export const NoteShadowsSchema = createZodUnion(NOTE_SHADOWS);
 
-export const DEFAULT_NOTE_SHADOW = NOTE_SHADOWS[2];
+export const DEFAULT_NOTE_SHADOW = NOTE_SHADOWS[0];

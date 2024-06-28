@@ -255,22 +255,12 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
   };
 
   private _addConnector(source: Connection, target: Connection) {
-    const { current, edgeless } = this;
+    const { edgeless } = this;
 
-    let color = '';
-    if (isShape(current)) {
-      color = current.strokeColor;
-    } else {
-      let tag = current.background.split('-').pop();
-      if (!tag || tag === 'gray') tag = 'grey';
-      color = `--affine-palette-line-${tag}`;
-    }
-    const stroke = getComputedStyle(edgeless).getPropertyValue(color)
-      ? color
-      : DEFAULT_CONNECTOR_COLOR;
+    const stroke = DEFAULT_CONNECTOR_COLOR;
 
     const id = edgeless.service.addElement(CanvasElementType.CONNECTOR, {
-      mode: ConnectorMode.Orthogonal,
+      mode: ConnectorMode.Curve,
       strokeWidth: 2,
       stroke,
       source,

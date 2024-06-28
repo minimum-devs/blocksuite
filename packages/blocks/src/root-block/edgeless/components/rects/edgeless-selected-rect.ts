@@ -48,7 +48,6 @@ import {
   normalizeShapeBound,
 } from '../../../../surface-block/index.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import { NOTE_MIN_HEIGHT, NOTE_MIN_WIDTH } from '../../utils/consts.js';
 import { getElementsWithoutGroup } from '../../utils/group.js';
 import {
   getSelectableBounds,
@@ -681,7 +680,7 @@ export class EdgelessSelectedRect extends WithDisposable(LitElement) {
       if (!element) return;
 
       if (isNoteBlock(element)) {
-        this.#adjustNote(element, bound, direction);
+        // this.#adjustNote(element, bound, direction);
         return;
       }
 
@@ -973,48 +972,6 @@ export class EdgelessSelectedRect extends WithDisposable(LitElement) {
         isAttachmentBlock(ele) ||
         isEmbeddedBlock(ele)
     );
-  }
-
-  #adjustNote(
-    element: NoteBlockModel,
-    bound: Bound,
-    direction: HandleDirection
-  ) {
-    const curBound = Bound.deserialize(element.xywh);
-
-    let scale = element.edgeless.scale ?? 1;
-    let width = curBound.w / scale;
-    let height = curBound.h / scale;
-
-    if (this._shiftKey) {
-      scale = bound.w / width;
-      this._scalePercent = `${Math.round(scale * 100)}%`;
-      this._scaleDirection = direction;
-    } else if (curBound.h !== bound.h) {
-      this.edgeless.doc.updateBlock(element, () => {
-        element.edgeless.collapse = true;
-        element.edgeless.collapsedHeight = bound.h / scale;
-      });
-    }
-
-    width = bound.w / scale;
-    width = clamp(width, NOTE_MIN_WIDTH, Infinity);
-    bound.w = width * scale;
-
-    height = bound.h / scale;
-    height = clamp(height, NOTE_MIN_HEIGHT, Infinity);
-    bound.h = height * scale;
-
-    this._isWidthLimit = width === NOTE_MIN_WIDTH;
-    this._isHeightLimit = height === NOTE_MIN_HEIGHT;
-
-    this.edgeless.service.updateElement(element.id, {
-      edgeless: {
-        ...element.edgeless,
-        scale,
-      },
-      xywh: bound.serialize(),
-    });
   }
 
   #adjustEdgelessText(
