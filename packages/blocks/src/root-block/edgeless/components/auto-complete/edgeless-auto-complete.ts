@@ -245,9 +245,7 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
     });
 
     this._disposables.addFromEvent(document, 'pointerup', e => {
-      if (!this._isMoving) {
-        this._generateElementOnClick(type);
-      } else if (connector && !connector.target.id) {
+      if (connector && !connector.target.id) {
         this.edgeless.service.selection.clear();
         this._createAutoCompletePanel(e, connector);
       }
@@ -617,7 +615,6 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
           class="edgeless-auto-complete-arrow"
           @mouseenter=${() => {
             this._timer = setTimeout(() => {
-              console.log('assd');
               if (this.current instanceof ShapeElementModel) {
                 const bound = this._computeNextBound(type);
                 const path = this._computeLine(type, this.current, bound);
