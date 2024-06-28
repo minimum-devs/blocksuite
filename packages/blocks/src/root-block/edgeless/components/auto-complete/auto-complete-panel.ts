@@ -6,14 +6,13 @@ import { DocCollection } from '@blocksuite/store';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import {
-  FrameIcon,
-  SmallNoteIcon,
-} from '../../../../_common/icons/edgeless.js';
-import { FontFamilyIcon } from '../../../../_common/icons/text.js';
+  DocumentationTaskIcon,
+  MajorTaskIcon,
+  MinorTaskIcon,
+} from '../../../../_common/icons/index.js';
 import type { NoteBlockModel } from '../../../../note-block/note-model.js';
 import {
   FontFamily,
@@ -27,7 +26,6 @@ import {
   type ShapeElementModel,
   TextElementModel,
 } from '../../../../surface-block/element-model/index.js';
-import type { ShapeStyle } from '../../../../surface-block/element-model/shape.js';
 import {
   Bound,
   clamp,
@@ -50,14 +48,12 @@ import {
   mountTextElementEditor,
 } from '../../utils/text.js';
 import { GET_DEFAULT_TEXT_COLOR } from '../panel/color-panel.js';
-import { ShapeComponentConfig } from '../toolbar/shape/shape-menu-config.js';
 import {
   type AUTO_COMPLETE_TARGET_TYPE,
   AutoCompleteFrameOverlay,
   AutoCompleteNoteOverlay,
   AutoCompleteShapeOverlay,
   AutoCompleteTextOverlay,
-  capitalizeFirstLetter,
   createShapeElement,
   DEFAULT_NOTE_BACKGROUND_COLOR,
   DEFAULT_NOTE_OVERLAY_HEIGHT,
@@ -310,6 +306,9 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         this._showTextOverlay();
         break;
       case 'note':
+      case 'note.minor':
+      case 'note.major':
+      case 'note.documentation':
         this._showNoteOverlay();
         break;
       case 'frame':
@@ -353,7 +352,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     edgeless.doc.captureSync();
   }
 
-  private _addNote() {
+  private _addNote(subtype?: AUTO_COMPLETE_TARGET_TYPE) {
     const { doc } = this.edgeless;
     const service = this.edgeless.service!;
     const target = this._getTargetXYWH(
@@ -374,9 +373,18 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     }
 
     const computedStyle = getComputedStyle(this.edgeless);
-    const background = computedStyle.getPropertyValue(color)
+    let background = computedStyle.getPropertyValue(color)
       ? color
       : DEFAULT_NOTE_BACKGROUND_COLOR;
+
+    // Handle different subtypes
+    if (subtype === 'note.major') {
+      background = '--affine-note-background-blue';
+    } else if (subtype === 'note.minor') {
+      background = '--affine-note-background-grey';
+    } else if (subtype === 'note.documentation') {
+      background = '--affine-note-background-yellow';
+    }
 
     const id = service!.addBlock(
       'affine:note',
@@ -386,7 +394,17 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       },
       doc.root?.id
     );
-    doc.addBlock('affine:paragraph', { type: 'text' }, id);
+
+    let blockType: 'text' | 'h1' | 'h2' = 'text';
+    if (subtype === 'note.major') {
+      blockType = 'h1';
+    } else if (subtype === 'note.minor') {
+      blockType = 'h2';
+    } else if (subtype === 'note.documentation') {
+      blockType = 'text';
+    }
+
+    doc.addBlock('affine:paragraph', { type: blockType }, id);
     const group = this.currentSource.group;
 
     if (group instanceof GroupElementModel) {
@@ -516,6 +534,15 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       case 'note':
         this._addNote();
         break;
+      case 'note.minor':
+        this._addNote('note.minor');
+        break;
+      case 'note.major':
+        this._addNote('note.major');
+        break;
+      case 'note.documentation':
+        this._addNote('note.documentation');
+        break;
       case 'frame':
         this._addFrame();
         break;
@@ -538,24 +565,6 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     coord[1] = clamp(coord[1], 20, height - 20 - PANEL_HEIGHT);
 
     return coord;
-  }
-
-  private _getCurrentSourceInfo(): {
-    style: ShapeStyle;
-    type: AUTO_COMPLETE_TARGET_TYPE;
-  } {
-    const { currentSource } = this;
-    if (isShape(currentSource)) {
-      const { shapeType, shapeStyle, radius } = currentSource;
-      return {
-        style: shapeStyle,
-        type: shapeType === 'rect' && radius ? 'roundedRect' : shapeType,
-      };
-    }
-    return {
-      style: 'General',
-      type: 'note',
-    };
   }
 
   override connectedCallback() {
@@ -589,59 +598,31 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       left: `${position[0]}px`,
       top: `${position[1]}px`,
     });
-    const { style: currentSourceStyle, type: currentSourceType } =
-      this._getCurrentSourceInfo();
-
-    const shapeButtons = repeat(
-      ShapeComponentConfig,
-      ({ name, generalIcon, scribbledIcon, tooltip }) => html`
-        <edgeless-tool-icon-button
-          .tooltip=${tooltip}
-          @pointerenter=${() => this._showOverlay(name)}
-          @pointerleave=${() => this._removeOverlay()}
-          @click=${() => this._autoComplete(name)}
-        >
-          ${currentSourceStyle === 'General' ? generalIcon : scribbledIcon}
-        </edgeless-tool-icon-button>
-      `
-    );
 
     return html`<div class="auto-complete-panel-container" style=${style}>
-      ${shapeButtons}
-
       <edgeless-tool-icon-button
-        .tooltip=${'Text'}
-        @pointerenter=${() => this._showOverlay('text')}
-        @pointerleave=${() => this._removeOverlay()}
-        @click=${() => this._autoComplete('text')}
-      >
-        ${FontFamilyIcon}
-      </edgeless-tool-icon-button>
-      <edgeless-tool-icon-button
-        .tooltip=${'Note'}
+        .tooltip=${'Major Task'}
         @pointerenter=${() => this._showOverlay('note')}
         @pointerleave=${() => this._removeOverlay()}
-        @click=${() => this._autoComplete('note')}
+        @click=${() => this._autoComplete('note.major')}
       >
-        ${SmallNoteIcon}
+        ${MajorTaskIcon}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
-        .tooltip=${'Frame'}
-        @pointerenter=${() => this._showOverlay('frame')}
+        .tooltip=${'Minor Task'}
+        @pointerenter=${() => this._showOverlay('note')}
         @pointerleave=${() => this._removeOverlay()}
-        @click=${() => this._autoComplete('frame')}
+        @click=${() => this._autoComplete('note.minor')}
       >
-        ${FrameIcon}
+        ${MinorTaskIcon}
       </edgeless-tool-icon-button>
-
       <edgeless-tool-icon-button
-        .iconContainerPadding=${0}
-        .tooltip=${capitalizeFirstLetter(currentSourceType)}
-        @pointerenter=${() => this._showOverlay(currentSourceType)}
+        .tooltip=${'Documentation'}
+        @pointerenter=${() => this._showOverlay('note')}
         @pointerleave=${() => this._removeOverlay()}
-        @click=${() => this._autoComplete(currentSourceType)}
+        @click=${() => this._autoComplete('note.documentation')}
       >
-        <div class="row-button">Add a same object</div>
+        ${DocumentationTaskIcon}
       </edgeless-tool-icon-button>
     </div>`;
   }

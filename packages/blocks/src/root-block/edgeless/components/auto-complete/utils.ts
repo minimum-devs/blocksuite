@@ -43,6 +43,9 @@ export type AUTO_COMPLETE_TARGET_TYPE =
   | TARGET_SHAPE_TYPE
   | 'text'
   | 'note'
+  | 'note.major'
+  | 'note.minor'
+  | 'note.documentation'
   | 'frame';
 
 export const DEFAULT_NOTE_BACKGROUND_COLOR =

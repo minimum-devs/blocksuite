@@ -13,7 +13,6 @@ import {
   MindMapSiblingIcon,
   NoteAutoCompleteIcon,
 } from '../../../../_common/icons/index.js';
-import { handleNativeRangeAtPoint } from '../../../../_common/utils/index.js';
 import type { NoteBlockModel } from '../../../../note-block/index.js';
 import type { ConnectorElementModel } from '../../../../surface-block/element-model/connector.js';
 import {
@@ -35,14 +34,12 @@ import {
 } from '../../../../surface-block/index.js';
 import { ConnectorPathGenerator } from '../../../../surface-block/managers/connector-manager.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import { NOTE_INIT_HEIGHT } from '../../utils/consts.js';
 import { isNoteBlock } from '../../utils/query.js';
 import { mountShapeTextEditor } from '../../utils/text.js';
 import { DEFAULT_CONNECTOR_COLOR } from '../panel/color-panel.js';
 import type { SelectedRect } from '../rects/edgeless-selected-rect.js';
 import { EdgelessAutoCompletePanel } from './auto-complete-panel.js';
 import {
-  createEdgelessElement,
   Direction,
   getPosition,
   isShape,
@@ -280,46 +277,6 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
       target,
     });
     return edgeless.service.getElementById(id) as ConnectorElementModel;
-  }
-
-  private _generateElementOnClick(type: Direction) {
-    const { doc, service } = this.edgeless;
-    const bound = this._computeNextBound(type);
-    const id = createEdgelessElement(this.edgeless, this.current, bound);
-    if (isShape(this.current)) {
-      const { startPosition, endPosition } = getPosition(type);
-      this._addConnector(
-        {
-          id: this.current.id,
-          position: startPosition,
-        },
-        {
-          id,
-          position: endPosition,
-        }
-      );
-
-      mountShapeTextEditor(
-        service.getElementById(id) as ShapeElementModel,
-        this.edgeless
-      );
-    } else {
-      const model = doc.getBlockById(id);
-      assertExists(model);
-      const [x, y] = service.viewport.toViewCoord(
-        bound.center[0],
-        bound.y + NOTE_INIT_HEIGHT / 2
-      );
-      requestAnimationFrame(() => {
-        handleNativeRangeAtPoint(x, y);
-      });
-    }
-
-    this.edgeless.service.selection.set({
-      elements: [id],
-      editing: true,
-    });
-    this.removeOverlay();
   }
 
   private _addMindmapNode(
