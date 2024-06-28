@@ -567,7 +567,7 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
     // Note: right, left
     const arrowDirections = isShape
       ? [Direction.Right, Direction.Bottom, Direction.Left, Direction.Top]
-      : [Direction.Right, Direction.Left];
+      : [Direction.Right, Direction.Bottom, Direction.Left, Direction.Top];
     const arrowMargin = isShape ? height / 2 : height * (2 / 3);
     const Arrows = arrowDirections.map(type => {
       let transform = '';
@@ -617,6 +617,7 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
           class="edgeless-auto-complete-arrow"
           @mouseenter=${() => {
             this._timer = setTimeout(() => {
+              console.log('assd');
               if (this.current instanceof ShapeElementModel) {
                 const bound = this._computeNextBound(type);
                 const path = this._computeLine(type, this.current, bound);

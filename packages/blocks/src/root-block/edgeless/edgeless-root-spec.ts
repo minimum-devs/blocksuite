@@ -9,7 +9,7 @@ import { literal, unsafeStatic } from 'lit/static-html.js';
 import { RootBlockSchema } from '../root-model.js';
 import { AFFINE_DOC_REMOTE_SELECTION_WIDGET } from '../widgets/doc-remote-selection/doc-remote-selection.js';
 import { AFFINE_DRAG_HANDLE_WIDGET } from '../widgets/drag-handle/drag-handle.js';
-import { AFFINE_EDGELESS_AUTO_CONNECT_WIDGET } from '../widgets/edgeless-auto-connect/edgeless-auto-connect.js';
+import type { AFFINE_EDGELESS_AUTO_CONNECT_WIDGET } from '../widgets/edgeless-auto-connect/edgeless-auto-connect.js';
 import { AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET } from '../widgets/edgeless-remote-selection/index.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-toolbar/index.js';
 import { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from '../widgets/embed-card-toolbar/embed-card-toolbar.js';
@@ -80,9 +80,6 @@ export const EdgelessRootBlockSpec: BlockSpec<EdgelessRootBlockWidgetName> = {
       [EDGELESS_ELEMENT_TOOLBAR_WIDGET]: literal`${unsafeStatic(EDGELESS_ELEMENT_TOOLBAR_WIDGET)}`,
       [AFFINE_VIEWPORT_OVERLAY_WIDGET]: literal`${unsafeStatic(
         AFFINE_VIEWPORT_OVERLAY_WIDGET
-      )}`,
-      [AFFINE_EDGELESS_AUTO_CONNECT_WIDGET]: literal`${unsafeStatic(
-        AFFINE_EDGELESS_AUTO_CONNECT_WIDGET
       )}`,
     },
   },
