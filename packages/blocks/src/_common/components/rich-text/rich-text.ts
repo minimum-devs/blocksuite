@@ -72,6 +72,10 @@ export class RichText extends WithDisposable(ShadowlessElement) {
     rich-text .nowrap-lines v-element span {
       white-space: pre !important;
     }
+
+    .edgeless-block-portal-note rich-text v-line {
+      text-align: center;
+    }
   `;
 
   @query('.inline-editor')
