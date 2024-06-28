@@ -5,6 +5,7 @@ import { AffineEditorContainer } from '@blocksuite/presets';
 import type { BlockCollection } from '@blocksuite/store';
 import type { DocCollection } from '@blocksuite/store';
 
+import { CustomOutlinePanel } from '../../_common/components/custom-outline-panel.js';
 import { DocsPanel } from '../../_common/components/docs-panel.js';
 import { LeftSidePanel } from '../../_common/components/left-side-panel.js';
 import { QuickEdgelessMenu } from '../../_common/components/quick-edgeless-menu.js';
@@ -66,12 +67,16 @@ export async function mountDefaultDocEditor(collection: DocCollection) {
   const docsPanel = new DocsPanel();
   docsPanel.editor = editor;
 
+  const outlinePanel = new CustomOutlinePanel();
+  outlinePanel.editor = editor;
+
   const quickEdgelessMenu = new QuickEdgelessMenu();
   quickEdgelessMenu.collection = doc.collection;
   quickEdgelessMenu.editor = editor;
   quickEdgelessMenu.mode = defaultMode;
   quickEdgelessMenu.leftSidePanel = leftSidePanel;
   quickEdgelessMenu.docsPanel = docsPanel;
+  quickEdgelessMenu.outlinePanel = outlinePanel;
 
   function switchQuickEdgelessMenu(mode: DocMode) {
     if (!mode) return;
@@ -79,6 +84,7 @@ export async function mountDefaultDocEditor(collection: DocCollection) {
   }
 
   document.body.append(leftSidePanel);
+  document.body.append(outlinePanel);
   document.body.append(quickEdgelessMenu);
 
   // debug info

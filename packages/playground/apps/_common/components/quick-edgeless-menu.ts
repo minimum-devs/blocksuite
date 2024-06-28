@@ -38,6 +38,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { notify } from '../../default/utils/notify.js';
 import { generateRoomId } from '../sync/websocket/utils.js';
 import type { CustomChatPanel } from './custom-chat-panel.js';
+import type { CustomOutlinePanel } from './custom-outline-panel.js';
 import type { DocsPanel } from './docs-panel.js';
 import type { LeftSidePanel } from './left-side-panel.js';
 
@@ -96,6 +97,9 @@ export class QuickEdgelessMenu extends ShadowlessElement {
   accessor editor!: AffineEditorContainer;
 
   @property({ attribute: false })
+  accessor outlinePanel!: CustomOutlinePanel;
+
+  @property({ attribute: false })
   accessor leftSidePanel!: LeftSidePanel;
 
   @property({ attribute: false })
@@ -122,6 +126,10 @@ export class QuickEdgelessMenu extends ShadowlessElement {
 
   private _restoreMode() {
     this.mode = this.rootService.docModeService.getMode();
+  }
+
+  private _toggleOutlinePanel() {
+    this.outlinePanel.toggleDisplay();
   }
 
   private _addNote() {
@@ -447,6 +455,11 @@ export class QuickEdgelessMenu extends ShadowlessElement {
                     ${this.chatPanel
                       ? html`<sl-menu-item @click=${this._toggleChatPanel}>
                           Toggle Chat Panel
+                        </sl-menu-item>`
+                      : nothing}
+                    ${this.outlinePanel
+                      ? html`<sl-menu-item @click=${this._toggleOutlinePanel}>
+                          Toggle Outline Panel
                         </sl-menu-item>`
                       : nothing}
                   </sl-menu>
