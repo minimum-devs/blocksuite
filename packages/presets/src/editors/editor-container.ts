@@ -17,6 +17,7 @@ import {
 } from '@blocksuite/blocks';
 import { assertExists, Slot } from '@blocksuite/global/utils';
 import type { BlockModel, Doc } from '@blocksuite/store';
+import { Job } from '@blocksuite/store';
 import { css, html, nothing } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
@@ -283,6 +284,31 @@ export class AffineEditorContainer
               ></edgeless-editor>
             `
     )}`;
+  }
+
+  async saveDocToJson() {
+    const { collection } = this.doc;
+    const job = new Job({ collection });
+    const json = await job.docToSnapshot(this.doc);
+    return JSON.stringify(json);
+  }
+
+  // @ts-ignore
+  async loadDocFromJson(json) {
+    try {
+      const obj = JSON.parse(json);
+      const { collection } = this.doc;
+      const existingDoc = collection.getDoc(obj.meta.id);
+      if (existingDoc) {
+        collection.removeDoc(obj.meta.id);
+      }
+      const job = new Job({ collection });
+      const newDoc = await job.snapshotToDoc(obj);
+      this.doc = newDoc;
+    } catch (error) {
+      console.error('Error parsing JSON or loading document:', error);
+      throw error;
+    }
   }
 }
 
