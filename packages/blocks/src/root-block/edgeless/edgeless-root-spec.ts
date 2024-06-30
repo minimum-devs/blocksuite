@@ -25,7 +25,6 @@ import type { EdgelessRootBlockComponent } from './edgeless-root-block.js';
 import { EdgelessRootService } from './edgeless-root-service.js';
 
 export type EdgelessRootBlockWidgetName =
-  // | typeof AFFINE_BLOCK_HUB_WIDGET
   | typeof AFFINE_MODAL_WIDGET
   | typeof AFFINE_INNER_MODAL_WIDGET
   | typeof AFFINE_PIE_MENU_WIDGET
@@ -46,10 +45,8 @@ export const EdgelessRootBlockSpec: BlockSpec<EdgelessRootBlockWidgetName> = {
   service: EdgelessRootService,
   view: {
     component: literal`affine-edgeless-root`,
+    // @ts-ignore
     widgets: {
-      // [AFFINE_BLOCK_HUB_WIDGET]: literal`${unsafeStatic(
-      //   AFFINE_BLOCK_HUB_WIDGET
-      // )}`,
       [AFFINE_MODAL_WIDGET]: literal`${unsafeStatic(AFFINE_MODAL_WIDGET)}`,
       [AFFINE_INNER_MODAL_WIDGET]: literal`${unsafeStatic(AFFINE_INNER_MODAL_WIDGET)}`,
       [AFFINE_PIE_MENU_WIDGET]: literal`${unsafeStatic(AFFINE_PIE_MENU_WIDGET)}`,
