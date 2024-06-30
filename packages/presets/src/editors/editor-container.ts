@@ -293,8 +293,7 @@ export class AffineEditorContainer
     return JSON.stringify(json);
   }
 
-  // @ts-ignore
-  async loadDocFromJson(json) {
+  async loadDocFromJson(json: string) {
     try {
       const obj = JSON.parse(json);
       const { collection } = this.doc;
