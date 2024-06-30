@@ -21,6 +21,7 @@ import { css, html, nothing } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
 
+import { registerOutlinePanelComponents } from '../index.js';
 import type { EdgelessEditor } from './edgeless-editor.js';
 import type { PageEditor } from './page-editor.js';
 
@@ -39,6 +40,12 @@ function forwardSlot<T extends Record<string, Slot<any>>>(
     }
   });
 }
+
+registerOutlinePanelComponents(components => {
+  Object.entries(components).forEach(([name, component]) => {
+    customElements.define(name, component);
+  });
+});
 
 @customElement('affine-editor-container')
 export class AffineEditorContainer
