@@ -253,7 +253,7 @@ export class AffineEditorContainer
       this.rootModel.id,
       this.showOutlinePanel
         ? html`
-            <outline-panel .editor=${this.editor}></outline-panel>
+            <outline-panel .editor=${this}></outline-panel>
             <edgeless-editor
               .doc=${this.doc}
               .specs=${this._edgelessSpecs}
