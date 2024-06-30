@@ -1,7 +1,6 @@
 import './page-editor.js';
 import './edgeless-editor.js';
-import '../fragments/doc-title/doc-title.js';
-import '../fragments/doc-meta-tags/doc-meta-tags.js';
+import '../fragments/outline-panel/outline-panel.js';
 
 import { ShadowlessElement, WithDisposable } from '@blocksuite/block-std';
 import type {
@@ -96,8 +95,9 @@ export class AffineEditorContainer
   }
 
   get host() {
-    assertExists(this.editor);
-    return this.editor.host;
+    const editor = this.editor;
+    assertExists(editor);
+    return editor.host;
   }
 
   get rootModel() {
@@ -160,6 +160,9 @@ export class AffineEditorContainer
   @property({ attribute: false })
   override accessor autofocus = false;
 
+  @property({ attribute: false })
+  accessor showOutlinePanel = false;
+
   /**
    * @deprecated need to refactor
    */
@@ -175,15 +178,22 @@ export class AffineEditorContainer
     tagClicked: new Slot<{ tagId: string }>(),
   };
 
-  switchEditor(mode: DocMode) {
-    this.mode = mode;
+  switchEditor(mode: DocMode | 'outline') {
+    if (mode === 'outline') {
+      this.mode = 'edgeless';
+      this.showOutlinePanel = true;
+    } else {
+      this.mode = mode;
+      this.showOutlinePanel = false;
+    }
   }
 
   override async getUpdateComplete(): Promise<boolean> {
     const result = await super.getUpdateComplete();
     const editor = this.editor;
-    assertExists(editor);
-    await editor.updateComplete;
+    if (editor) {
+      await editor.updateComplete;
+    }
     return result;
   }
 
@@ -241,22 +251,30 @@ export class AffineEditorContainer
 
     return html`${keyed(
       this.rootModel.id,
-      this.mode === 'page'
+      this.showOutlinePanel
         ? html`
-            <div class="affine-page-viewport">
-              <page-editor
-                .doc=${this.doc}
-                .specs=${this._pageSpecs}
-                .hasViewport=${false}
-              ></page-editor>
-            </div>
-          `
-        : html`
+            <outline-panel .editor=${this}></outline-panel>
             <edgeless-editor
               .doc=${this.doc}
               .specs=${this._edgelessSpecs}
             ></edgeless-editor>
           `
+        : this.mode === 'page'
+          ? html`
+              <div class="affine-page-viewport">
+                <page-editor
+                  .doc=${this.doc}
+                  .specs=${this._pageSpecs}
+                  .hasViewport=${false}
+                ></page-editor>
+              </div>
+            `
+          : html`
+              <edgeless-editor
+                .doc=${this.doc}
+                .specs=${this._edgelessSpecs}
+              ></edgeless-editor>
+            `
     )}`;
   }
 }
