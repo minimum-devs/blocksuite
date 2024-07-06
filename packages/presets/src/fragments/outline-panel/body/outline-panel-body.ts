@@ -189,10 +189,6 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor domHost!: Document | HTMLElement;
 
-  private _isEdgelessMode() {
-    return this.mode === 'edgeless';
-  }
-
   private _clearHighlightMask() {
     this._highlightMask?.remove();
     this._highlightMask = null;
@@ -308,7 +304,7 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
     notes: OutlineNoteItem[],
     children: NoteBlockModel[]
   ) {
-    if (!this._isEdgelessMode() || !children.length || !this.doc.root) return;
+    if (!children.length || !this.doc.root) return;
 
     const blocks = selected.map(
       id => (notesMap.get(id) as OutlineNoteItem).note
@@ -333,8 +329,6 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
   }
 
   private _selectNote(e: SelectEvent) {
-    if (!this._isEdgelessMode()) return;
-
     const { selected, id, multiselect } = e.detail;
 
     if (!selected) {
@@ -376,11 +370,6 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
         'Changing the order will remove all arrows between steps. Do you want to proceed?'
       );
       this._confirmShown = true;
-      const confirmEvent = new CustomEvent<{ confirmed: boolean }>(
-        'user-confirmation',
-        { detail: { confirmed: userConfirmed } }
-      );
-      this.dispatchEvent(confirmEvent);
       if (!userConfirmed) return;
     }
 
@@ -408,9 +397,11 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
         this._dragging = false;
         this.insertIndex = undefined;
 
-        if (insertIdx === undefined) return;
-
-        this._moveNotes(insertIdx, selected, notesMap, notes, children);
+        if (insertIdx !== undefined) {
+          this._moveNotes(insertIdx, selected, notesMap, notes, children);
+          const dragEndEvent = new CustomEvent('drag-finished');
+          this.dispatchEvent(dragEndEvent);
+        }
       },
       onDragMove: (idx, indicatorTranslateY) => {
         this.insertIndex = idx;
@@ -494,7 +485,7 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
   }
 
   private _deSelectNoteInEdgelessMode(note: NoteBlockModel) {
-    if (!this._isEdgelessMode() || !this.edgeless) return;
+    if (!this.edgeless) return;
 
     const { selection } = this.edgeless.service;
     if (!selection.has(note.id)) return;
@@ -541,7 +532,7 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
   }
 
   private _scrollToBlock(e: ClickBlockEvent) {
-    if (this._isEdgelessMode() || !this.editorHost) return;
+    if (!this.editorHost) return;
 
     const rootElement = this.editorHost.querySelector('affine-page-root');
     if (!rootElement) return;
@@ -702,13 +693,6 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
     </div>`;
   }
 
-  private _setupGlobalEventListener() {
-    document.addEventListener('user-confirmation', event => {
-      const customEvent = event as CustomEvent<{ confirmed: boolean }>;
-      console.log('User confirmation:', customEvent.detail.confirmed);
-    });
-  }
-
   override connectedCallback(): void {
     super.connectedCallback();
   }
@@ -737,22 +721,19 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
       this._setDocDisposables();
     }
 
-    if (
-      _changedProperties.has('mode') &&
-      this.edgeless &&
-      this._isEdgelessMode()
-    ) {
+    if (_changedProperties.has('mode')) {
       this._clearHighlightMask();
       if (_changedProperties.get('mode') === undefined) return;
 
-      requestAnimationFrame(() => this._zoomToFit());
+      if (this.mode === 'edgeless') {
+        requestAnimationFrame(() => this._zoomToFit());
+      }
     }
   }
 
   override firstUpdated(): void {
     this.disposables.addFromEvent(this, 'click', this._clickHandler);
     this.disposables.addFromEvent(this, 'dblclick', this._doubleClickHandler);
-    this._setupGlobalEventListener();
   }
 
   override render() {

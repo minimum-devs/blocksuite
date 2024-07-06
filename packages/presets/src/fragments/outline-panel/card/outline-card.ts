@@ -308,12 +308,7 @@ export class OutlineNoteCard extends WithDisposable(LitElement) {
 
   private _dispatchDragEvent(e: MouseEvent) {
     e.preventDefault();
-    if (
-      e.button !== 0 ||
-      this.editorMode === 'page' ||
-      !this.enableNotesSorting
-    )
-      return;
+    if (e.button !== 0 || !this.enableNotesSorting) return;
 
     const { clientX: startX, clientY: startY } = e;
     const disposeDragStart = on(this.ownerDocument, 'mousemove', e => {
@@ -328,7 +323,6 @@ export class OutlineNoteCard extends WithDisposable(LitElement) {
       }
 
       const event = new CustomEvent('drag');
-
       this.dispatchEvent(event);
       disposeDragStart();
     });

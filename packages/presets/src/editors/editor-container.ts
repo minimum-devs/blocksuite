@@ -113,6 +113,26 @@ export class AffineEditorContainer
   }
 
   static override styles = css`
+    .editor-container {
+      display: flex;
+      height: 100%;
+    }
+
+    .editor-column {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .outline-column {
+      width: 300px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
     .affine-page-viewport {
       position: relative;
       display: flex;
@@ -124,6 +144,7 @@ export class AffineEditorContainer
       container-type: inline-size;
       font-family: var(--affine-font-family);
     }
+
     .affine-page-viewport * {
       box-sizing: border-box;
     }
@@ -186,14 +207,8 @@ export class AffineEditorContainer
     tagClicked: new Slot<{ tagId: string }>(),
   };
 
-  switchEditor(mode: DocMode | 'outline') {
-    if (mode === 'outline') {
-      this.mode = 'edgeless';
-      this.showOutlinePanel = true;
-    } else {
-      this.mode = mode;
-      this.showOutlinePanel = false;
-    }
+  switchEditor(mode: DocMode) {
+    this.mode = mode;
   }
 
   override async getUpdateComplete(): Promise<boolean> {
@@ -257,33 +272,39 @@ export class AffineEditorContainer
   override render() {
     if (!this.rootModel) return nothing;
 
-    return html`${keyed(
-      this.rootModel.id,
-      this.showOutlinePanel
+    return html`
+      ${this.mode === 'page'
         ? html`
-            <outline-panel .editor=${this}></outline-panel>
-            <edgeless-editor
-              .doc=${this.doc}
-              .specs=${this._edgelessSpecs}
-            ></edgeless-editor>
-          `
-        : this.mode === 'page'
-          ? html`
-              <div class="affine-page-viewport">
-                <page-editor
-                  .doc=${this.doc}
-                  .specs=${this._pageSpecs}
-                  .hasViewport=${false}
-                ></page-editor>
+            <div class="editor-container">
+              <div class="editor-column">
+                ${keyed(
+                  this.rootModel.id,
+                  html`
+                    <div class="affine-page-viewport">
+                      <page-editor
+                        .doc=${this.doc}
+                        .specs=${this._pageSpecs}
+                        .hasViewport=${false}
+                      ></page-editor>
+                    </div>
+                  `
+                )}
               </div>
-            `
-          : html`
+              <div class="outline-column">
+                <outline-panel .editor=${this}></outline-panel>
+              </div>
+            </div>
+          `
+        : keyed(
+            this.rootModel.id,
+            html`
               <edgeless-editor
                 .doc=${this.doc}
                 .specs=${this._edgelessSpecs}
               ></edgeless-editor>
             `
-    )}`;
+          )}
+    `;
   }
 
   async saveDocToJson() {
