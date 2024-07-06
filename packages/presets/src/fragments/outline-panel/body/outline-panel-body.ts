@@ -115,6 +115,9 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
   private accessor _dragging = false;
 
   @state()
+  private accessor _confirmShown = false;
+
+  @state()
   private accessor _pageVisibleNotes: OutlineNoteItem[] = [];
 
   @state()
@@ -368,9 +371,22 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
     )
       return;
 
+    if (!this._confirmShown) {
+      const userConfirmed = confirm(
+        'Changing the order will remove all arrows between steps. Do you want to proceed?'
+      );
+      this._confirmShown = true;
+      const confirmEvent = new CustomEvent<{ confirmed: boolean }>(
+        'user-confirmation',
+        { detail: { confirmed: userConfirmed } }
+      );
+      this.dispatchEvent(confirmEvent);
+      if (!userConfirmed) return;
+    }
+
     this._dragging = true;
 
-    // cache the notes in case it is changed by other peers
+    // Cache the notes in case it is changed by other peers
     const children = this.doc.root.children.slice() as NoteBlockModel[];
     const notes = this._pageVisibleNotes;
     const notesMap = this._pageVisibleNotes.reduce((map, note, index) => {
@@ -686,6 +702,13 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
     </div>`;
   }
 
+  private _setupGlobalEventListener() {
+    document.addEventListener('user-confirmation', event => {
+      const customEvent = event as CustomEvent<{ confirmed: boolean }>;
+      console.log('User confirmation:', customEvent.detail.confirmed);
+    });
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
   }
@@ -729,6 +752,7 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
   override firstUpdated(): void {
     this.disposables.addFromEvent(this, 'click', this._clickHandler);
     this.disposables.addFromEvent(this, 'dblclick', this._doubleClickHandler);
+    this._setupGlobalEventListener();
   }
 
   override render() {
