@@ -41,7 +41,7 @@ export interface EdgelessDraggableElementOptions<T> {
   /**
    * the threshold of mousedown and mouseup duration in ms
    * if the duration is less than this value, it will be treated as a click
-   * @default 200
+   * @default 1500
    */
   clickThreshold?: number;
 
@@ -55,6 +55,11 @@ export interface EdgelessDraggableElementOptions<T> {
    * @default 1.2
    */
   clickToDragScale?: number;
+
+  /**
+   * To verify if the move is valid
+   */
+  isValidMove?: (offset: { x: number; y: number }) => boolean;
 
   /**
    * when element is clicked - mouse down and up without moving
@@ -88,4 +93,8 @@ export type ElementInfo<T> = {
    * Override the value in {@link EdgelessDraggableElementOptions.standardWidth}
    */
   standardWidth?: number;
+};
+
+export const defaultIsValidMove = (offset: { x: number; y: number }) => {
+  return Math.abs(offset.x) > 50 || Math.abs(offset.y) > 50;
 };

@@ -3,9 +3,9 @@ import { css, html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { positionToVRect } from '../../../../../../_common/components/index.js';
 import { ArrowDownIcon } from '../../../../../../_common/icons/index.js';
 import { getRootByElement } from '../../../../../../_common/utils/index.js';
+import type { GroupData } from '../../../../common/group-by/helper.js';
 import {
   type ColumnDataType,
   getStatCalcOperationFromType,
@@ -63,6 +63,9 @@ export class DatabaseColumnStatsCell extends WithDisposable(LitElement) {
 
   @property({ attribute: false })
   accessor column!: DataViewTableColumnManager;
+
+  @property({ attribute: false })
+  accessor group: GroupData | undefined = undefined;
 
   private getResultString() {
     if (!this.result || !isFinite(this.result.value)) return '';
@@ -123,7 +126,7 @@ export class DatabaseColumnStatsCell extends WithDisposable(LitElement) {
     const rootElement = getRootByElement(this);
     popColStatOperationMenu(
       rootElement,
-      positionToVRect(ev.x, ev.y),
+      ev.target as HTMLElement,
       this.column,
       this.getColumnType(),
       this.onSelect
@@ -143,7 +146,7 @@ export class DatabaseColumnStatsCell extends WithDisposable(LitElement) {
 
   calculate() {
     if (!this.operation) return;
-    this.result = this.operation.calculate(this.column);
+    this.result = this.operation.calculate(this.column, this.group);
   }
 
   getColumnType(): ColumnDataType {

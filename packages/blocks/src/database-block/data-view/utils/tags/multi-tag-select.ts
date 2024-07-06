@@ -1,7 +1,6 @@
 import { ShadowlessElement, WithDisposable } from '@blocksuite/block-std';
 import { nanoid } from '@blocksuite/store';
-import type { Middleware } from '@floating-ui/dom';
-import { autoPlacement, detectOverflow } from '@floating-ui/dom';
+import { autoPlacement, flip, offset } from '@floating-ui/dom';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -313,7 +312,9 @@ export class MultiTagSelect extends WithDisposable(ShadowlessElement) {
   }
 
   protected override firstUpdated() {
-    this._selectInput.focus();
+    requestAnimationFrame(() => {
+      this._selectInput.focus();
+    });
     this._disposables.addFromEvent(this, 'click', () => {
       this._selectInput.focus();
     });
@@ -469,6 +470,7 @@ export const popTagSelect = (
     onOptionsChange: (options: SelectTag[]) => void;
     onComplete?: () => void;
     minWidth?: number;
+    container?: HTMLElement;
   }
 ) => {
   const component = new MultiTagSelect();
@@ -495,32 +497,8 @@ export const popTagSelect = (
   };
   const remove = createPopup(target, component, {
     onClose: ops.onComplete,
-    middleware: [middleware],
+    middleware: [flip(), offset({ mainAxis: -28, crossAxis: 112 })],
+    container: ops.container,
   });
   return remove;
-};
-
-const middleware: Middleware = {
-  name: 'middleware',
-  fn: async state => {
-    const overflow = await detectOverflow(state);
-    const referenceRect = state.elements.reference.getBoundingClientRect();
-    const top = referenceRect.top;
-    const left = referenceRect.left;
-    let y = top - 12;
-    let x = left - 12;
-    if (overflow.bottom > 0) {
-      y = top - state.elements.floating.getBoundingClientRect().height;
-    }
-    if (overflow.right > 0) {
-      x = left - overflow.right;
-    }
-    if (y < 0) {
-      y = 240;
-    }
-    return {
-      y,
-      x,
-    };
-  },
 };

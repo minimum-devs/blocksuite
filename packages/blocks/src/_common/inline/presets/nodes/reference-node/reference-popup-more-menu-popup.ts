@@ -34,6 +34,8 @@ export class ReferencePopupMoreMenu extends WithDisposable(LitElement) {
       display: flex;
       justify-content: flex-start;
       align-items: center;
+      padding: 0px 8px;
+      gap: 8px;
       width: 100%;
     }
 
@@ -49,12 +51,7 @@ export class ReferencePopupMoreMenu extends WithDisposable(LitElement) {
       color: var(--affine-error-color);
     }
 
-    .reference-popup-more-menu-container > .menu-item svg {
-      margin: 0 8px;
-    }
-
     .reference-popup-more-menu-container > .divider {
-      width: 148px;
       height: 1px;
       margin: 8px;
       background-color: var(--affine-border-color);
@@ -94,6 +91,10 @@ export class ReferencePopupMoreMenu extends WithDisposable(LitElement) {
     return std;
   }
 
+  get _openButtonDisabled() {
+    return this.referenceDocId === this.blockElement.doc.id;
+  }
+
   private _openDoc() {
     const refDocId = this.referenceDocId;
     const blockElement = this.blockElement;
@@ -124,6 +125,7 @@ export class ReferencePopupMoreMenu extends WithDisposable(LitElement) {
             class="menu-item open"
             text="Open this doc"
             @click=${() => this._openDoc()}
+            ?disabled=${this._openButtonDisabled}
           >
             ${OpenIcon}
           </icon-button>
