@@ -167,7 +167,7 @@ export function createConversionItem(
 
       rootElement.host.std.doc.captureSync();
 
-      const xywh = `[0,0,800,95]`;
+      const xywh = `[0,0,304,95]`;
 
       const noteId = rootElement.host.std.doc.addBlock(
         'affine:note',

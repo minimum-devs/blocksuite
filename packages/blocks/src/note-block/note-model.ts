@@ -14,7 +14,7 @@ import type { SerializedXYWH } from '../surface-block/utils/xywh.js';
 export const NoteBlockSchema = defineBlockSchema({
   flavour: 'affine:note',
   props: (): NoteProps => ({
-    xywh: `[0,0,${NOTE_WIDTH},95]`,
+    xywh: `[0,0,${NOTE_WIDTH},195]`,
     background: DEFAULT_NOTE_BACKGROUND_COLOR,
     index: 'a0',
     hidden: false,

@@ -73,7 +73,15 @@ export class RichText extends WithDisposable(ShadowlessElement) {
       white-space: pre !important;
     }
 
-    .edgeless-block-portal-note rich-text v-line {
+    .edgeless-block-portal-note .affine-paragraph-rich-text-wrapper.h1 {
+      text-align: center;
+    }
+
+    .edgeless-block-portal-note .affine-paragraph-rich-text-wrapper.h2 {
+      text-align: center;
+    }
+
+    .edgeless-block-portal-note .affine-paragraph-rich-text-wrapper.h3 {
       text-align: center;
     }
   `;
