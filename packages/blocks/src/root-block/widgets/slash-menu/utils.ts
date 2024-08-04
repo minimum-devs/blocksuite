@@ -153,7 +153,7 @@ export function tryRemoveEmptyLine(model: BlockModel) {
 export function createConversionItem(
   config: TextConversionConfig
 ): SlashMenuActionItem {
-  const { name, description, icon, flavour, type } = config;
+  const { name, type, description, icon, flavour } = config;
   return {
     name,
     description,
@@ -161,14 +161,26 @@ export function createConversionItem(
     tooltip: slashMenuToolTips[name],
     showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
     action: ({ rootElement }) => {
-      rootElement.host.std.command
-        .chain()
-        .updateBlockType({
-          flavour,
-          props: { type },
-        })
-        .inline((ctx, next) => (ctx.updatedBlocks ? next() : false))
-        .run();
+      const rootModel = rootElement.host.std.doc.root;
+      if (!rootModel) return;
+      const rootId = rootModel.id;
+
+      rootElement.host.std.doc.captureSync();
+
+      const xywh = `[0,0,800,95]`;
+
+      const noteId = rootElement.host.std.doc.addBlock(
+        'affine:note',
+        { xywh },
+        rootId
+      );
+
+      const text = new rootElement.host.std.doc.Text(name);
+      rootElement.host.std.doc.addBlock(
+        'affine:paragraph',
+        { text, type: type },
+        noteId
+      );
     },
   };
 }
