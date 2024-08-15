@@ -29,14 +29,14 @@ export class GroupSetting extends WithDisposable(ShadowlessElement) {
       gap: 4px;
       ${unsafeCSS(dataViewCssVariable())};
     }
-    .group-item {
+    .st-group-item {
       display: flex;
       padding: 4px 12px;
       position: relative;
       cursor: grab;
     }
 
-    .group-item-drag-bar {
+    .st-group-item-drag-bar {
       width: 4px;
       height: 12px;
       border-radius: 1px;
@@ -48,7 +48,7 @@ export class GroupSetting extends WithDisposable(ShadowlessElement) {
       margin: auto;
     }
 
-    .group-item:hover .group-item-drag-bar {
+    .st-group-item:hover .st-group-item-drag-bar {
       background-color: #c0bfc1;
     }
   `;
@@ -118,8 +118,8 @@ export class GroupSetting extends WithDisposable(ShadowlessElement) {
               readonly: true,
             };
             const config = group.helper.groupConfig();
-            return html` <div class="dv-hover dv-round-4 group-item">
-              <div class="group-item-drag-bar"></div>
+            return html` <div class="dv-hover dv-round-4 st-group-item">
+              <div class="st-group-item-drag-bar"></div>
               <div style="padding: 0 4px;position:relative;">
                 ${renderUniLit(config?.view, props)}
                 <div

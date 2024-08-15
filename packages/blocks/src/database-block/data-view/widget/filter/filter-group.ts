@@ -95,14 +95,14 @@ export class FilterGroupView extends WithDisposable(ShadowlessElement) {
       color: var(--affine-text-primary-color);
     }
 
-    .filter-group-item {
+    .filter-st-group-item {
       padding: 4px 0;
       display: flex;
       align-items: start;
       gap: 8px;
     }
 
-    .filter-group-item-ops {
+    .filter-st-group-item-ops {
       margin-top: 4px;
       padding: 4px;
       border-radius: 4px;
@@ -111,18 +111,18 @@ export class FilterGroupView extends WithDisposable(ShadowlessElement) {
       cursor: pointer;
     }
 
-    .filter-group-item-ops:hover {
+    .filter-st-group-item-ops:hover {
       background-color: var(--affine-hover-color);
     }
 
-    .filter-group-item-ops svg {
+    .filter-st-group-item-ops svg {
       fill: var(--affine-text-secondary-color);
       color: var(--affine-text-secondary-color);
       width: 18px;
       height: 18px;
     }
 
-    .filter-group-item-ops:hover svg {
+    .filter-st-group-item-ops:hover svg {
       fill: var(--affine-text-primary-color);
       color: var(--affine-text-primary-color);
     }
@@ -347,7 +347,7 @@ export class FilterGroupView extends WithDisposable(ShadowlessElement) {
                       .data="${filter}"
                     ></filter-group-view>
                   `}
-              <div class="filter-group-item-ops" @click="${clickOps}">
+              <div class="filter-st-group-item-ops" @click="${clickOps}">
                 ${MoreHorizontalIcon}
               </div>
             </div>
