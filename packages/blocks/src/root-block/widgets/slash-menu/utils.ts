@@ -161,23 +161,20 @@ export function createConversionItem(
     tooltip: slashMenuToolTips[name],
     showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
     action: ({ rootElement, model }) => {
-      if (!model) return; // Ensure we have a model selected
+      if (!model) return;
 
       console.log(model);
 
-      model.doc.captureSync(); // Capture the sync operation
+      model.doc.captureSync();
 
-      // Get the parent block (note) of the current paragraph (model)
       const parentNote = model.doc.getParent(model.id);
 
       if (parentNote) {
-        // Check if the parent note already contains another paragraph
         const hasAnotherParagraph = parentNote.children?.some(
           child => child.flavour === 'affine:paragraph' && child.id !== model.id
         );
 
         if (hasAnotherParagraph) {
-          // If another paragraph exists, create a new note with a new paragraph
           const rootModel = rootElement.host.std.doc.root;
           if (!rootModel) return;
           const rootId = rootModel.id;
@@ -190,16 +187,32 @@ export function createConversionItem(
             rootId
           );
 
-          const text = new rootElement.host.std.doc.Text(name);
+          const text = new rootElement.host.std.doc.Text('');
 
-          rootElement.host.std.doc.addBlock(
+          const newParagraphId = rootElement.host.std.doc.addBlock(
             'affine:paragraph',
             { text, type: type },
             newNoteId
           );
 
+          console.log(`New note with paragraph created`);
+
+          const selection = rootElement.host.selection;
+          selection.update(() => {
+            return [
+              selection.create('text', {
+                from: {
+                  blockId: newParagraphId,
+                  index: 0,
+                  length: text.length,
+                },
+                to: null,
+              }),
+            ];
+          });
+
           console.log(
-            `New note with paragraph created and extra newline avoided`
+            `Focused on text inside the paragraph block with ID: ${newParagraphId}`
           );
         } else {
           model.doc.updateBlock(model, { type: type });
