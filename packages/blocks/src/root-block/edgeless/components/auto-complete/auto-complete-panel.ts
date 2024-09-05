@@ -383,13 +383,18 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       ? color
       : DEFAULT_NOTE_BACKGROUND_COLOR;
 
-    // Handle different subtypes
     if (subtype === 'note.major') {
       background = '--affine-note-background-blue';
     } else if (subtype === 'note.minor') {
-      background = '--affine-note-background-grey';
+      background = '--affine-note-background-white';
+    } else if (subtype === 'note.automation') {
+      background = '--affine-note-background-purple';
     } else if (subtype === 'note.documentation') {
-      background = '--affine-note-background-yellow';
+      background = '--affine-note-background-white';
+    } else if (subtype === 'note.decision') {
+      background = '--affine-note-background-red';
+    } else if (subtype === 'note.end') {
+      background = '--affine-note-background-red';
     }
 
     const id = service!.addBlock(
