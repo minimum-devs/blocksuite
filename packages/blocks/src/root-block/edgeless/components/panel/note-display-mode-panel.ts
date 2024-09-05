@@ -70,9 +70,9 @@ export class NoteDisplayModePanel extends WithDisposable(LitElement) {
       case NoteDisplayMode.DocAndEdgeless:
         return 'In Both';
       case NoteDisplayMode.DocOnly:
-        return 'In Page Only';
+        return 'In Document Only';
       case NoteDisplayMode.EdgelessOnly:
-        return 'In Edgeless Only';
+        return 'In Whiteboard Only';
     }
   }
 
