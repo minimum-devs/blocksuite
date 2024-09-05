@@ -9,9 +9,11 @@ import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import {
-  DocumentationTaskIcon,
-  MajorTaskIcon,
-  MinorTaskIcon,
+  AutomationStepIcon,
+  DecisionStepIcon,
+  EndStepIcon,
+  MajorStepIcon,
+  MinorStepIcon,
 } from '../../../../_common/icons/index.js';
 import type { NoteBlockModel } from '../../../../note-block/note-model.js';
 import {
@@ -306,9 +308,12 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         this._showTextOverlay();
         break;
       case 'note':
-      case 'note.minor':
       case 'note.major':
+      case 'note.minor':
+      case 'note.automation':
       case 'note.documentation':
+      case 'note.decision':
+      case 'note.end':
         this._showNoteOverlay();
         break;
       case 'frame':
@@ -534,14 +539,23 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       case 'note':
         this._addNote();
         break;
-      case 'note.minor':
-        this._addNote('note.minor');
-        break;
       case 'note.major':
         this._addNote('note.major');
         break;
+      case 'note.minor':
+        this._addNote('note.minor');
+        break;
+      case 'note.automation':
+        this._addNote('note.automation');
+        break;
       case 'note.documentation':
         this._addNote('note.documentation');
+        break;
+      case 'note.decision':
+        this._addNote('note.decision');
+        break;
+      case 'note.end':
+        this._addNote('note.end');
         break;
       case 'frame':
         this._addFrame();
@@ -601,20 +615,28 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
 
     return html`<div class="auto-complete-panel-container" style=${style}>
       <edgeless-tool-icon-button
-        .tooltip=${'Major Task'}
+        .tooltip=${'Major Step'}
         @pointerenter=${() => this._showOverlay('note')}
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('note.major')}
       >
-        ${MajorTaskIcon}
+        ${MajorStepIcon}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
-        .tooltip=${'Minor Task'}
+        .tooltip=${'Minor Step'}
         @pointerenter=${() => this._showOverlay('note')}
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('note.minor')}
       >
-        ${MinorTaskIcon}
+        ${MinorStepIcon}
+      </edgeless-tool-icon-button>
+      <edgeless-tool-icon-button
+        .tooltip=${'Automation Step'}
+        @pointerenter=${() => this._showOverlay('note')}
+        @pointerleave=${() => this._removeOverlay()}
+        @click=${() => this._autoComplete('note.automation')}
+      >
+        ${AutomationStepIcon}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
         .tooltip=${'Documentation'}
@@ -622,7 +644,23 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('note.documentation')}
       >
-        ${DocumentationTaskIcon}
+        ${AutomationStepIcon}
+      </edgeless-tool-icon-button>
+      <edgeless-tool-icon-button
+        .tooltip=${'Decision Step'}
+        @pointerenter=${() => this._showOverlay('note')}
+        @pointerleave=${() => this._removeOverlay()}
+        @click=${() => this._autoComplete('note.decision')}
+      >
+        ${DecisionStepIcon}
+      </edgeless-tool-icon-button>
+      <edgeless-tool-icon-button
+        .tooltip=${'End Step'}
+        @pointerenter=${() => this._showOverlay('note')}
+        @pointerleave=${() => this._removeOverlay()}
+        @click=${() => this._autoComplete('note.end')}
+      >
+        ${EndStepIcon}
       </edgeless-tool-icon-button>
     </div>`;
   }
