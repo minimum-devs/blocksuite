@@ -103,7 +103,7 @@ export class EdgelessNoteMask extends WithDisposable(ShadowlessElement) {
 export class EdgelessBlockPortalNote extends EdgelessPortalBase<NoteBlockModel> {
   static override styles = css`
     .edgeless-note-collapse-button {
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       width: 28px;
