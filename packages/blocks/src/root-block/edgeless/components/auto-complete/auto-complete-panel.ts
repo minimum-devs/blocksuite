@@ -11,6 +11,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 import {
   AutomationStepIcon,
   DecisionStepIcon,
+  DocumentationIcon,
   EndStepIcon,
   MajorStepIcon,
   MinorStepIcon,
@@ -644,7 +645,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('note.documentation')}
       >
-        ${AutomationStepIcon}
+        ${DocumentationIcon}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
         .tooltip=${'Decision Step'}

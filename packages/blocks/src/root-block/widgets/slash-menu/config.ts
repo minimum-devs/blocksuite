@@ -68,7 +68,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
   items: [
     { groupName: 'Task Types' },
     ...textConversionConfigs
-      .filter(i => i.type && ['h1', 'h2', 'text'].includes(i.type))
+      .filter(i => i.type && ['h1', 'h3', 'text'].includes(i.type))
       .map(createConversionItem),
   ],
 };
