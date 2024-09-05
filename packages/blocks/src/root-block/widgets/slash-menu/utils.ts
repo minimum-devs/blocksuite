@@ -160,27 +160,54 @@ export function createConversionItem(
     icon,
     tooltip: slashMenuToolTips[name],
     showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
-    action: ({ rootElement }) => {
-      const rootModel = rootElement.host.std.doc.root;
-      if (!rootModel) return;
-      const rootId = rootModel.id;
+    action: ({ rootElement, model }) => {
+      if (!model) return; // Ensure we have a model selected
 
-      rootElement.host.std.doc.captureSync();
+      console.log(model);
 
-      const xywh = `[0,0,304,95]`;
+      model.doc.captureSync(); // Capture the sync operation
 
-      const noteId = rootElement.host.std.doc.addBlock(
-        'affine:note',
-        { xywh },
-        rootId
-      );
+      // Get the parent block (note) of the current paragraph (model)
+      const parentNote = model.doc.getParent(model.id);
 
-      const text = new rootElement.host.std.doc.Text(name);
-      rootElement.host.std.doc.addBlock(
-        'affine:paragraph',
-        { text, type: type },
-        noteId
-      );
+      if (parentNote) {
+        // Check if the parent note already contains another paragraph
+        const hasAnotherParagraph = parentNote.children?.some(
+          child => child.flavour === 'affine:paragraph' && child.id !== model.id
+        );
+
+        if (hasAnotherParagraph) {
+          // If another paragraph exists, create a new note with a new paragraph
+          const rootModel = rootElement.host.std.doc.root;
+          if (!rootModel) return;
+          const rootId = rootModel.id;
+
+          const xywh = `[0,0,304,95]`;
+
+          const newNoteId = rootElement.host.std.doc.addBlock(
+            'affine:note',
+            { xywh },
+            rootId
+          );
+
+          const text = new rootElement.host.std.doc.Text(name);
+
+          rootElement.host.std.doc.addBlock(
+            'affine:paragraph',
+            { text, type: type },
+            newNoteId
+          );
+
+          console.log(
+            `New note with paragraph created and extra newline avoided`
+          );
+        } else {
+          model.doc.updateBlock(model, { type: type });
+          console.log(`Block updated with type: ${type}`);
+        }
+      } else {
+        console.error('Parent block (note) not found');
+      }
     },
   };
 }
