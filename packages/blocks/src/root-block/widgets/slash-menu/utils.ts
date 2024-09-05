@@ -167,6 +167,7 @@ export function createConversionItem(
 
       model.doc.captureSync();
 
+      // Get the parent note of the current paragraph
       const parentNote = model.doc.getParent(model.id);
 
       if (parentNote) {
@@ -179,8 +180,35 @@ export function createConversionItem(
           if (!rootModel) return;
           const rootId = rootModel.id;
 
-          const xywh = `[0,0,304,95]`;
+          // Get all existing notes to calculate their positions
+          const existingNotes =
+            rootElement.host.std.doc.getBlocksByFlavour('affine:note');
 
+          // Calculate a new position for the new note to avoid overlap
+          let newX = 0; // Default x position
+          let newY = 0; // Default y position
+          const noteWidth = 304;
+          const noteHeight = 95;
+          const margin = 20; // Margin between notes
+
+          existingNotes.forEach(note => {
+            const [x, y, width, height] = note.model.xywh
+              .replace(/[[\]]/g, '') // Remove brackets
+              .split(',')
+              .map(Number);
+
+            // Check if the new note would overlap with an existing note
+            if (newX < x + width + margin && newY < y + height + margin) {
+              // Move the new note down or to the right to avoid overlap
+              newX = x + width + margin;
+              newY = y + height + margin;
+            }
+          });
+
+          // Set the new position for the new note
+          const xywh = `[${newX},${newY},${noteWidth},${noteHeight}]`;
+
+          // Create the new note at the calculated position
           const newNoteId = rootElement.host.std.doc.addBlock(
             'affine:note',
             { xywh },
@@ -189,14 +217,16 @@ export function createConversionItem(
 
           const text = new rootElement.host.std.doc.Text('');
 
+          // Create a new paragraph inside the new note
           const newParagraphId = rootElement.host.std.doc.addBlock(
             'affine:paragraph',
             { text, type: type },
             newNoteId
           );
 
-          console.log(`New note with paragraph created`);
+          console.log(`New note with paragraph created at position: ${xywh}`);
 
+          // Focus on the text inside the newly created paragraph block
           const selection = rootElement.host.selection;
           selection.update(() => {
             return [
