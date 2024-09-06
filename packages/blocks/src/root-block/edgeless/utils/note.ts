@@ -5,6 +5,7 @@ import {
   type Point,
 } from '../../../_common/utils/index.js';
 import type { NoteBlockModel } from '../../../note-block/note-model.js';
+import { StrokeStyle } from '../../../surface-block/consts.js';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import {
   DEFAULT_NOTE_HEIGHT,
@@ -30,18 +31,23 @@ export function addNote(
     width,
     height,
   });
-
   const doc = edgeless.doc;
-
   const note = doc.getBlockById(noteId) as NoteBlockModel;
 
   let background = '';
+  let borderSize = 0;
+  let borderStyle = StrokeStyle.None;
+  let borderRadius = 16;
+  let shape = 'rectangle';
+
   switch (tip) {
     case 'Major Step':
       background = '--affine-note-background-blue';
       break;
     case 'Minor Step':
       background = '--affine-note-background-white';
+      borderSize = 4;
+      borderStyle = StrokeStyle.Solid;
       break;
     case 'Automation Step':
       background = '--affine-note-background-purple';
@@ -50,6 +56,10 @@ export function addNote(
       background = '--affine-note-background-white';
       break;
     case 'Decision Step':
+      background = '--affine-note-background-red';
+      shape = 'diamond';
+      borderRadius = 0;
+      break;
     case 'End Step':
       background = '--affine-note-background-red';
       break;
@@ -57,9 +67,15 @@ export function addNote(
       background = '--affine-note-background-default';
   }
 
-  // Update the note's background color
   doc.updateBlock(note, () => {
     note.background = background;
+    note.edgeless.style.borderSize = borderSize;
+    note.edgeless.style.borderStyle = borderStyle;
+    note.edgeless.style.borderRadius = borderRadius;
+
+    if (shape === 'diamond') {
+      console.log('Diamond shape requested for Decision Step');
+    }
   });
 
   const blockId = doc.addBlock(
