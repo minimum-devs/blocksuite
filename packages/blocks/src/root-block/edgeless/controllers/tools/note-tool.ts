@@ -125,8 +125,6 @@ export class NoteToolController extends EdgelessToolController<NoteTool> {
       collapse: false,
     };
 
-    console.log(options);
-
     const point = new Point(e.point.x, e.point.y);
     addNote(this._edgeless, point, options, tip);
   }

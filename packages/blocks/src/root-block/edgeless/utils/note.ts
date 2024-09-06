@@ -27,18 +27,20 @@ export function addNote(
   width = DEFAULT_NOTE_WIDTH,
   height = DEFAULT_NOTE_HEIGHT
 ) {
+  const noteWidth = width;
+  const noteHeight = height;
+
   const noteId = edgeless.addNoteWithPoint(point, {
-    width,
-    height,
+    width: noteWidth,
+    height: noteHeight,
   });
+
   const doc = edgeless.doc;
   const note = doc.getBlockById(noteId) as NoteBlockModel;
-
   let background = '';
   let borderSize = 0;
   let borderStyle = StrokeStyle.None;
   let borderRadius = 16;
-  let shape = 'rectangle';
 
   switch (tip) {
     case 'Major Step':
@@ -56,9 +58,10 @@ export function addNote(
       background = '--affine-note-background-white';
       break;
     case 'Decision Step':
-      background = '--affine-note-background-red';
-      shape = 'diamond';
-      borderRadius = 0;
+      background = '--affine-note-background-orange';
+      borderSize = 2;
+      borderStyle = StrokeStyle.Dash;
+      borderRadius = 999;
       break;
     case 'End Step':
       background = '--affine-note-background-red';
@@ -72,10 +75,6 @@ export function addNote(
     note.edgeless.style.borderSize = borderSize;
     note.edgeless.style.borderStyle = borderStyle;
     note.edgeless.style.borderRadius = borderRadius;
-
-    if (shape === 'diamond') {
-      console.log('Diamond shape requested for Decision Step');
-    }
   });
 
   const blockId = doc.addBlock(
@@ -84,14 +83,13 @@ export function addNote(
     noteId
   );
 
-  if (options.collapse && height > NOTE_MIN_HEIGHT) {
+  if (options.collapse && noteHeight > NOTE_MIN_HEIGHT) {
     doc.updateBlock(note, () => {
       note.edgeless.collapse = true;
-      note.edgeless.collapsedHeight = height;
+      note.edgeless.collapsedHeight = noteHeight;
     });
   }
 
-  // Rest of the function remains unchanged
   edgeless.tools.setEdgelessTool({ type: 'default' });
   requestAnimationFrame(() => {
     const blocks =

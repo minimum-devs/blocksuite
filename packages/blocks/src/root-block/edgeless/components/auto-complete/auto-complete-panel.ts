@@ -22,6 +22,7 @@ import {
   FontStyle,
   FontWeight,
 } from '../../../../surface-block/consts.js';
+import { StrokeStyle } from '../../../../surface-block/consts.js';
 import type { Connection } from '../../../../surface-block/element-model/connector.js';
 import {
   CanvasElementType,
@@ -366,7 +367,6 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       DEFAULT_NOTE_OVERLAY_HEIGHT
     );
     if (!target) return;
-
     const { xywh, position } = target;
 
     let color = '';
@@ -383,18 +383,38 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       ? color
       : DEFAULT_NOTE_BACKGROUND_COLOR;
 
-    if (subtype === 'note.major') {
-      background = '--affine-note-background-blue';
-    } else if (subtype === 'note.minor') {
-      background = '--affine-note-background-white';
-    } else if (subtype === 'note.automation') {
-      background = '--affine-note-background-purple';
-    } else if (subtype === 'note.documentation') {
-      background = '--affine-note-background-white';
-    } else if (subtype === 'note.decision') {
-      background = '--affine-note-background-red';
-    } else if (subtype === 'note.end') {
-      background = '--affine-note-background-red';
+    let borderSize = 0;
+    let borderStyle = StrokeStyle.None;
+    let borderRadius = 16;
+    let blockType: 'text' | 'h1' | 'h3' = 'text';
+
+    switch (subtype) {
+      case 'note.major':
+        background = '--affine-note-background-blue';
+        blockType = 'h1';
+        break;
+      case 'note.minor':
+        background = '--affine-note-background-white';
+        borderSize = 4;
+        borderStyle = StrokeStyle.Solid;
+        blockType = 'h3';
+        break;
+      case 'note.automation':
+        background = '--affine-note-background-purple';
+        break;
+      case 'note.documentation':
+        background = '--affine-note-background-white';
+        blockType = 'text';
+        break;
+      case 'note.decision':
+        background = '--affine-note-background-orange';
+        borderSize = 2;
+        borderStyle = StrokeStyle.Dash;
+        borderRadius = 999;
+        break;
+      case 'note.end':
+        background = '--affine-note-background-red';
+        break;
     }
 
     const id = service!.addBlock(
@@ -402,32 +422,33 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       {
         xywh: serializeXYWH(...xywh),
         background,
+        edgeless: {
+          style: {
+            borderSize,
+            borderStyle,
+            borderRadius,
+          },
+        },
       },
       doc.root?.id
     );
 
-    let blockType: 'text' | 'h1' | 'h3' = 'text';
-    if (subtype === 'note.major') {
-      blockType = 'h1';
-    } else if (subtype === 'note.minor') {
-      blockType = 'h3';
-    } else if (subtype === 'note.documentation') {
-      blockType = 'text';
-    }
-
     doc.addBlock('affine:paragraph', { type: blockType }, id);
-    const group = this.currentSource.group;
 
+    const group = this.currentSource.group;
     if (group instanceof GroupElementModel) {
       group.addChild(id);
     }
+
     this.connector.target = {
       id,
       position: position as [number, number],
     };
+
     service.updateElement(this.connector.id, {
       target: { id, position },
     });
+
     this.edgeless.service.selection.set({
       elements: [id],
       editing: false,

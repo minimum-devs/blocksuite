@@ -6,6 +6,7 @@ import type { TextConversionConfig } from '../../../_common/configs/text-convers
 import type { AffineTextAttributes } from '../../../_common/inline/presets/affine-inline-specs.js';
 import { isInsideBlockByFlavour } from '../../../_common/utils/index.js';
 import { getInlineEditorByModel } from '../../../_common/utils/query.js';
+import { StrokeStyle } from '../../../surface-block/consts.js';
 import type {
   SlashMenuActionItem,
   SlashMenuContext,
@@ -162,8 +163,41 @@ export function createConversionItem(
     showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
     action: ({ rootElement, model }) => {
       if (!model) return;
-      console.log(name);
       model.doc.captureSync();
+
+      let background = '';
+      let borderSize = 0;
+      let borderStyle = StrokeStyle.None;
+      let borderRadius = 16;
+
+      switch (name) {
+        case 'Major Step':
+          background = '--affine-note-background-blue';
+          break;
+        case 'Minor Step':
+          background = '--affine-note-background-white';
+          borderSize = 4;
+          borderStyle = StrokeStyle.Solid;
+          break;
+        case 'Automation Step':
+          background = '--affine-note-background-purple';
+          break;
+        case 'Documentation':
+          background = '--affine-note-background-white';
+          break;
+        case 'Decision Step':
+          background = '--affine-note-background-orange';
+          borderSize = 2;
+          borderStyle = StrokeStyle.Dash;
+          borderRadius = 999;
+          break;
+        case 'End Step':
+          background = '--affine-note-background-red';
+          break;
+        default:
+          background = '--affine-note-background-default';
+      }
+
       // Get the parent note of the current paragraph
       const parentNote = model.doc.getParent(model.id);
       if (parentNote) {
@@ -195,36 +229,23 @@ export function createConversionItem(
               newY = y + height + margin;
             }
           });
-          // Set the new position for the new note
+
           const xywh = `[${newX},${newY},${noteWidth},${noteHeight}]`;
 
-          // Determine the background color based on the name
-          let background = '';
-          switch (name) {
-            case 'Major Step':
-              background = '--affine-note-background-blue';
-              break;
-            case 'Minor Step':
-              background = '--affine-note-background-white';
-              break;
-            case 'Automation Step':
-              background = '--affine-note-background-purple';
-              break;
-            case 'Documentation':
-              background = '--affine-note-background-white';
-              break;
-            case 'Decision Step':
-            case 'End Step':
-              background = '--affine-note-background-red';
-              break;
-            default:
-              background = '--affine-note-background-default';
-          }
-
-          // Create the new note at the calculated position with the determined background color
+          // Create the new note at the calculated position with the determined properties
           const newNoteId = rootElement.host.std.doc.addBlock(
             'affine:note',
-            { xywh, background },
+            {
+              xywh,
+              background,
+              edgeless: {
+                style: {
+                  borderSize,
+                  borderStyle,
+                  borderRadius,
+                },
+              },
+            },
             rootId
           );
           const text = new rootElement.host.std.doc.Text('');
@@ -255,8 +276,19 @@ export function createConversionItem(
             `Focused on text inside the paragraph block with ID: ${newParagraphId}`
           );
         } else {
+          // Update the existing block with new type and style
+          model.doc.updateBlock(parentNote, {
+            background,
+            edgeless: {
+              style: {
+                borderSize,
+                borderStyle,
+                borderRadius,
+              },
+            },
+          });
           model.doc.updateBlock(model, { type: type });
-          console.log(`Block updated with type: ${type}`);
+          console.log(`Block updated with type: ${type} and new style`);
         }
       } else {
         console.error('Parent block (note) not found');
