@@ -162,41 +162,32 @@ export function createConversionItem(
     showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
     action: ({ rootElement, model }) => {
       if (!model) return;
-
-      console.log(model);
-
+      console.log(name);
       model.doc.captureSync();
-
       // Get the parent note of the current paragraph
       const parentNote = model.doc.getParent(model.id);
-
       if (parentNote) {
         const hasAnotherParagraph = parentNote.children?.some(
           child => child.flavour === 'affine:paragraph' && child.id !== model.id
         );
-
         if (hasAnotherParagraph) {
           const rootModel = rootElement.host.std.doc.root;
           if (!rootModel) return;
           const rootId = rootModel.id;
-
           // Get all existing notes to calculate their positions
           const existingNotes =
             rootElement.host.std.doc.getBlocksByFlavour('affine:note');
-
           // Calculate a new position for the new note to avoid overlap
           let newX = 0; // Default x position
           let newY = 0; // Default y position
           const noteWidth = 304;
           const noteHeight = 95;
           const margin = 20; // Margin between notes
-
           existingNotes.forEach(note => {
             const [x, y, width, height] = note.model.xywh
               .replace(/[[\]]/g, '') // Remove brackets
               .split(',')
               .map(Number);
-
             // Check if the new note would overlap with an existing note
             if (newX < x + width + margin && newY < y + height + margin) {
               // Move the new note down or to the right to avoid overlap
@@ -204,28 +195,48 @@ export function createConversionItem(
               newY = y + height + margin;
             }
           });
-
           // Set the new position for the new note
           const xywh = `[${newX},${newY},${noteWidth},${noteHeight}]`;
 
-          // Create the new note at the calculated position
+          // Determine the background color based on the name
+          let background = '';
+          switch (name) {
+            case 'Major Step':
+              background = '--affine-note-background-blue';
+              break;
+            case 'Minor Step':
+              background = '--affine-note-background-white';
+              break;
+            case 'Automation Step':
+              background = '--affine-note-background-purple';
+              break;
+            case 'Documentation':
+              background = '--affine-note-background-white';
+              break;
+            case 'Decision Step':
+            case 'End Step':
+              background = '--affine-note-background-red';
+              break;
+            default:
+              background = '--affine-note-background-default';
+          }
+
+          // Create the new note at the calculated position with the determined background color
           const newNoteId = rootElement.host.std.doc.addBlock(
             'affine:note',
-            { xywh },
+            { xywh, background },
             rootId
           );
-
           const text = new rootElement.host.std.doc.Text('');
-
           // Create a new paragraph inside the new note
           const newParagraphId = rootElement.host.std.doc.addBlock(
             'affine:paragraph',
             { text, type: type },
             newNoteId
           );
-
-          console.log(`New note with paragraph created at position: ${xywh}`);
-
+          console.log(
+            `New note with paragraph created at position: ${xywh} with background: ${background}`
+          );
           // Focus on the text inside the newly created paragraph block
           const selection = rootElement.host.selection;
           selection.update(() => {
@@ -240,7 +251,6 @@ export function createConversionItem(
               }),
             ];
           });
-
           console.log(
             `Focused on text inside the paragraph block with ID: ${newParagraphId}`
           );
