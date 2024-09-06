@@ -22,6 +22,7 @@ export function addNote(
   edgeless: EdgelessRootBlockComponent,
   point: Point,
   options: NoteOptions,
+  tip: string,
   width = DEFAULT_NOTE_WIDTH,
   height = DEFAULT_NOTE_HEIGHT
 ) {
@@ -32,21 +33,50 @@ export function addNote(
 
   const doc = edgeless.doc;
 
+  const note = doc.getBlockById(noteId) as NoteBlockModel;
+
+  let background = '';
+  switch (tip) {
+    case 'Major Step':
+      background = '--affine-note-background-blue';
+      break;
+    case 'Minor Step':
+      background = '--affine-note-background-white';
+      break;
+    case 'Automation Step':
+      background = '--affine-note-background-purple';
+      break;
+    case 'Documentation':
+      background = '--affine-note-background-white';
+      break;
+    case 'Decision Step':
+    case 'End Step':
+      background = '--affine-note-background-red';
+      break;
+    default:
+      background = '--affine-note-background-default';
+  }
+
+  // Update the note's background color
+  doc.updateBlock(note, () => {
+    note.background = background;
+  });
+
   const blockId = doc.addBlock(
     options.childFlavour,
     { type: options.childType },
     noteId
   );
+
   if (options.collapse && height > NOTE_MIN_HEIGHT) {
-    const note = doc.getBlockById(noteId) as NoteBlockModel;
     doc.updateBlock(note, () => {
       note.edgeless.collapse = true;
       note.edgeless.collapsedHeight = height;
     });
   }
-  edgeless.tools.setEdgelessTool({ type: 'default' });
 
-  // Wait for edgelessTool updated
+  // Rest of the function remains unchanged
+  edgeless.tools.setEdgelessTool({ type: 'default' });
   requestAnimationFrame(() => {
     const blocks =
       (doc.root?.children.filter(
@@ -58,15 +88,11 @@ export function addNote(
         elements: [element.id],
         editing: true,
       });
-
-      // Waiting dom updated, `note mask` is removed
       edgeless.updateComplete
         .then(() => {
           if (blockId) {
             asyncFocusRichText(edgeless.host, blockId)?.catch(console.error);
           } else {
-            // Cannot reuse `handleNativeRangeClick` directly here,
-            // since `retargetClick` will re-target to pervious editor
             handleNativeRangeAtPoint(point.x, point.y);
           }
         })

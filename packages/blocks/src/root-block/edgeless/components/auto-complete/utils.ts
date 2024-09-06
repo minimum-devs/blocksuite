@@ -29,7 +29,7 @@ export enum Direction {
   Top,
 }
 
-export const PANEL_WIDTH = 136;
+export const PANEL_WIDTH = 120;
 export const PANEL_HEIGHT = 108;
 
 export const MAIN_GAP = 100;

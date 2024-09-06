@@ -75,7 +75,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     .auto-complete-panel-container {
       position: absolute;
       display: flex;
-      width: 136px;
+      width: 120px;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
@@ -406,11 +406,11 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       doc.root?.id
     );
 
-    let blockType: 'text' | 'h1' | 'h2' = 'text';
+    let blockType: 'text' | 'h1' | 'h3' = 'text';
     if (subtype === 'note.major') {
       blockType = 'h1';
     } else if (subtype === 'note.minor') {
-      blockType = 'h2';
+      blockType = 'h3';
     } else if (subtype === 'note.documentation') {
       blockType = 'text';
     }

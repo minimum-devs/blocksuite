@@ -117,14 +117,18 @@ export class NoteToolController extends EdgelessToolController<NoteTool> {
   onContainerClick(e: PointerEventState): void {
     this._clearOverlay();
 
-    const { childFlavour, childType } = this.tool;
+    const { childFlavour, childType, tip } = this.tool;
+
     const options = {
       childFlavour,
       childType,
       collapse: false,
     };
+
+    console.log(options);
+
     const point = new Point(e.point.x, e.point.y);
-    addNote(this._edgeless, point, options);
+    addNote(this._edgeless, point, options, tip);
   }
 
   onContainerContextMenu(): void {
