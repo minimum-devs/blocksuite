@@ -11,7 +11,7 @@ export class VText extends LitElement {
 
   @property({ attribute: false })
   accessor styles: StyleInfo = {
-    'word-break': 'break-all',
+    'word-break': 'break-word',
     'white-space': 'pre-wrap',
     'white-space-collapse': 'preserve',
     cursor: 'text',
