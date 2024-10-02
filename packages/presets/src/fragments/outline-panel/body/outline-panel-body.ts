@@ -365,13 +365,13 @@ export class OutlinePanelBody extends WithDisposable(LitElement) {
     )
       return;
 
-    if (!this._confirmShown) {
-      const userConfirmed = confirm(
-        'Changing the order will remove all arrows between steps. Do you want to proceed?'
-      );
-      this._confirmShown = true;
-      if (!userConfirmed) return;
-    }
+    // if (!this._confirmShown) {
+    //   const userConfirmed = confirm(
+    //     'Changing the order will remove all arrows between steps. Do you want to proceed?'
+    //   );
+    //   this._confirmShown = true;
+    //   if (!userConfirmed) return;
+    // }
 
     this._dragging = true;
 
