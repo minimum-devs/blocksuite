@@ -1,18 +1,13 @@
 import type { Chain, InitCommandCtx } from '@blocksuite/block-std';
-import { assertExists } from '@blocksuite/global/utils';
-import { html, type TemplateResult } from 'lit';
+import type { TemplateResult } from 'lit';
 
 import { toast } from '../../../_common/components/index.js';
-import { createSimplePortal } from '../../../_common/components/portal.js';
-import { DATABASE_CONVERT_WHITE_LIST } from '../../../_common/configs/quick-action/database-convert-view.js';
 import {
   BoldIcon,
   BulletedListIcon,
   CheckBoxIcon,
   CodeIcon,
   CopyIcon,
-  DatabaseTableViewIcon20,
-  FontLinkedDocIcon,
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
@@ -27,12 +22,6 @@ import {
   TextIcon,
   UnderlineIcon,
 } from '../../../_common/icons/index.js';
-import {
-  convertSelectedBlocksToLinkedDoc,
-  getTitleFromSelectedModels,
-  notifyDocCreated,
-  promptDocTitle,
-} from '../../../_common/utils/render-linked-doc.js';
 import type { AffineFormatBarWidget } from './format-bar.js';
 
 export type DividerConfigItem = {
@@ -142,94 +131,6 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
           .run();
       },
       showWhen: () => true,
-    })
-    .addInlineAction({
-      id: 'convert-to-database',
-      name: 'Group as Database',
-      icon: DatabaseTableViewIcon20,
-      isActive: () => false,
-      action: () => {
-        createSimplePortal({
-          template: html`<database-convert-view
-            .host=${toolbar.host}
-          ></database-convert-view>`,
-        });
-      },
-      showWhen: chain => {
-        const [_, ctx] = chain
-          .getSelectedModels({
-            types: ['block', 'text'],
-          })
-          .run();
-        const { selectedModels } = ctx;
-        if (!selectedModels || selectedModels.length === 0) return false;
-
-        return selectedModels.every(block =>
-          DATABASE_CONVERT_WHITE_LIST.includes(block.flavour)
-        );
-      },
-    })
-    .addInlineAction({
-      id: 'convert-to-linked-doc',
-      name: 'Create Linked Doc',
-      icon: FontLinkedDocIcon,
-      isActive: () => false,
-      action: (chain, formatBar) => {
-        const [_, ctx] = chain
-          .getSelectedModels({
-            types: ['block', 'text'],
-            mode: 'highest',
-          })
-          .run();
-        const { selectedModels } = ctx;
-        assertExists(selectedModels);
-        if (!selectedModels.length) return;
-
-        const host = formatBar.host;
-        host.selection.clear();
-
-        const doc = host.doc;
-        const autofill = getTitleFromSelectedModels(selectedModels);
-        void promptDocTitle(host, autofill).then(title => {
-          if (title === null) return;
-          const linkedDoc = convertSelectedBlocksToLinkedDoc(
-            doc,
-            selectedModels,
-            title
-          );
-          const linkedDocService = host.spec.getService(
-            'affine:embed-linked-doc'
-          );
-          linkedDocService.slots.linkedDocCreated.emit({ docId: linkedDoc.id });
-          notifyDocCreated(host, doc);
-          host.spec
-            .getService('affine:page')
-            .telemetryService?.track('DocCreated', {
-              control: 'create linked doc',
-              page: 'doc editor',
-              module: 'format toolbar',
-              type: 'embed-linked-doc',
-            });
-          host.spec
-            .getService('affine:page')
-            .telemetryService?.track('LinkedDocCreated', {
-              control: 'create linked doc',
-              page: 'doc editor',
-              module: 'format toolbar',
-              type: 'embed-linked-doc',
-            });
-        });
-      },
-      showWhen: chain => {
-        const [_, ctx] = chain
-          .getSelectedModels({
-            types: ['block', 'text'],
-            mode: 'highest',
-          })
-          .run();
-        const { selectedModels } = ctx;
-        return !!selectedModels && selectedModels.length > 0;
-      },
     })
     .addBlockTypeSwitch({
       flavour: 'affine:paragraph',
