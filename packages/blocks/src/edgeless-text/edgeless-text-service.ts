@@ -1,4 +1,5 @@
 import { BlockService } from '@blocksuite/block-std';
+import { Text } from '@blocksuite/store';
 
 import { asyncFocusRichText } from '../_common/utils/selection.js';
 import type { EdgelessRootBlockComponent } from '../root-block/index.js';
@@ -35,7 +36,7 @@ export class EdgelessTextBlockService extends BlockService<EdgelessTextBlockMode
 
     const blockId = edgeless.doc.addBlock(
       'affine:paragraph',
-      { type: 'text' },
+      { type: 'text', text: new Text('​') },
       textId
     );
     edgeless.updateComplete
