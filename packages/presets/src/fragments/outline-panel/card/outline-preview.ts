@@ -76,13 +76,16 @@ const styles = css`
     padding-left: 28px;
   }
 
-  .subtype.h1,
+  .subtype.h1 {
+    font-weight: 600;
+  }
+
   .subtype.h2,
   .subtype.h3,
   .subtype.h4,
   .subtype.h5,
   .subtype.h6 {
-    font-weight: 600;
+    font-weight: 300;
   }
 
   .subtype.h1 {
