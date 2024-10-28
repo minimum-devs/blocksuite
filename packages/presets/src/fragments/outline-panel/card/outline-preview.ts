@@ -77,7 +77,7 @@ const styles = css`
   }
 
   .subtype.h1 {
-    font-weight: 600;
+    font-weight: 800;
   }
 
   .subtype.h2,
