@@ -49,6 +49,8 @@ export type AUTO_COMPLETE_TARGET_TYPE =
   | 'note.documentation'
   | 'note.decision'
   | 'note.end'
+  | 'note.seat'
+  | 'note.software'
   | 'frame';
 
 export const DEFAULT_NOTE_BACKGROUND_COLOR =

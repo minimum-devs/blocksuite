@@ -15,6 +15,8 @@ import {
   EndStepIcon,
   MajorStepIcon,
   MinorStepIcon,
+  SeatIcon,
+  SoftwareIcon,
 } from '../../../../_common/icons/index.js';
 import type { NoteBlockModel } from '../../../../note-block/note-model.js';
 import {
@@ -316,6 +318,8 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       case 'note.documentation':
       case 'note.decision':
       case 'note.end':
+      case 'note.seat':
+      case 'note.software':
         this._showNoteOverlay();
         break;
       case 'frame':
@@ -414,6 +418,18 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         break;
       case 'note.end':
         background = '--affine-note-background-red';
+        break;
+      case 'note.seat':
+        background = '--affine-note-background-white';
+        borderSize = 1;
+        borderStyle = StrokeStyle.Dash;
+        blockType = 'text';
+        break;
+      case 'note.software':
+        background = '--affine-note-background-white';
+        borderSize = 1;
+        borderStyle = StrokeStyle.Dash;
+        blockType = 'text';
         break;
     }
 
@@ -584,6 +600,12 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       case 'note.end':
         this._addNote('note.end');
         break;
+      case 'note.seat':
+        this._addNote('note.seat');
+        break;
+      case 'note.software':
+        this._addNote('note.software');
+        break;
       case 'frame':
         this._addFrame();
         break;
@@ -688,6 +710,22 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         @click=${() => this._autoComplete('note.end')}
       >
         ${EndStepIcon}
+      </edgeless-tool-icon-button>
+      <edgeless-tool-icon-button
+        .tooltip=${'Seat'}
+        @pointerenter=${() => this._showOverlay('note')}
+        @pointerleave=${() => this._removeOverlay()}
+        @click=${() => this._autoComplete('note.seat')}
+      >
+        ${SeatIcon}
+      </edgeless-tool-icon-button>
+      <edgeless-tool-icon-button
+        .tooltip=${'Software'}
+        @pointerenter=${() => this._showOverlay('note')}
+        @pointerleave=${() => this._removeOverlay()}
+        @click=${() => this._autoComplete('note.software')}
+      >
+        ${SoftwareIcon}
       </edgeless-tool-icon-button>
     </div>`;
   }

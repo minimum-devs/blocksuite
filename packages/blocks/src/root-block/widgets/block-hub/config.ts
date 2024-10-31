@@ -5,6 +5,8 @@ import {
   EndStepIcon,
   MajorStepIcon,
   MinorStepIcon,
+  SeatIcon,
+  SoftwareIcon,
 } from '../../../_common/icons/index.js';
 
 export const TRANSITION_DELAY = 200;
@@ -69,6 +71,22 @@ export const BLOCKHUB_TEXT_ITEMS: BlockHubItem[] = [
     description: 'End Step',
     icon: EndStepIcon,
     tooltip: 'Drag / Click to insert End Step block',
+  },
+  {
+    flavour: 'affine:paragraph',
+    type: 'text',
+    name: 'Seat',
+    description: 'Add a seat',
+    icon: SeatIcon,
+    tooltip: 'Drag / Click to insert seat block',
+  },
+  {
+    flavour: 'affine:paragraph',
+    type: 'text',
+    name: 'Software',
+    description: 'Add a software used',
+    icon: SoftwareIcon,
+    tooltip: 'Drag / Click to insert software block',
   },
 ];
 

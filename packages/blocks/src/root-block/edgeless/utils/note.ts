@@ -66,6 +66,12 @@ export function addNote(
     case 'End Step':
       background = '--affine-note-background-red';
       break;
+    case 'Seat':
+      background = '--affine-note-background-white';
+      break;
+    case 'Software':
+      background = '--affine-note-background-white';
+      break;
     default:
       background = '--affine-note-background-default';
   }

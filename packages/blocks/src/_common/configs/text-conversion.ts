@@ -7,6 +7,8 @@ import {
   EndStepIcon,
   MajorStepIcon,
   MinorStepIcon,
+  SeatIcon,
+  SoftwareIcon,
 } from '../icons/index.js';
 
 /**
@@ -69,6 +71,22 @@ export const textConversionConfigs: TextConversionConfig[] = [
     name: 'End Step',
     description: 'Add an end step',
     icon: EndStepIcon,
+    hotkey: null,
+  },
+  {
+    flavour: 'affine:paragraph',
+    type: 'text',
+    name: 'Seat',
+    description: 'Add a seat',
+    icon: SeatIcon,
+    hotkey: null,
+  },
+  {
+    flavour: 'affine:paragraph',
+    type: 'text',
+    name: 'Software',
+    description: 'Add a software used',
+    icon: SoftwareIcon,
     hotkey: null,
   },
 ];
