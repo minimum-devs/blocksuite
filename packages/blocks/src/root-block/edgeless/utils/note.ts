@@ -68,9 +68,13 @@ export function addNote(
       break;
     case 'Seat':
       background = '--affine-note-background-white';
+      borderSize = 1;
+      borderStyle = StrokeStyle.Dash;
       break;
     case 'Software':
       background = '--affine-note-background-white';
+      borderSize = 1;
+      borderStyle = StrokeStyle.Dash;
       break;
     default:
       background = '--affine-note-background-default';
