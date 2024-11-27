@@ -170,6 +170,29 @@ export function createConversionItem(
       let borderStyle = StrokeStyle.None;
       let borderRadius = 16;
 
+      const validNames = [
+        'Text',
+        'Heading 1',
+        'Heading 2',
+        'Heading 3',
+        'Bulleted List',
+        'Numbered List',
+        'Quote',
+        'Divider',
+      ];
+
+      if (validNames.includes(name)) {
+        rootElement.std.command
+          .chain()
+          .updateBlockType({
+            flavour,
+            props: { type },
+          })
+          .run();
+
+        return;
+      }
+
       switch (name) {
         case 'Major Step':
           background = '--affine-note-background-blue';
@@ -260,16 +283,20 @@ export function createConversionItem(
             },
             rootId
           );
+
           const text = new rootElement.host.std.doc.Text('');
+
           // Create a new paragraph inside the new note
           const newParagraphId = rootElement.host.std.doc.addBlock(
             'affine:paragraph',
             { text, type: type },
             newNoteId
           );
+
           console.log(
             `New note with paragraph created at position: ${xywh} with background: ${background}`
           );
+
           // Focus on the text inside the newly created paragraph block
           const selection = rootElement.host.selection;
           selection.update(() => {
@@ -284,6 +311,7 @@ export function createConversionItem(
               }),
             ];
           });
+
           console.log(
             `Focused on text inside the paragraph block with ID: ${newParagraphId}`
           );

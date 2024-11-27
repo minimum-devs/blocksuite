@@ -5,7 +5,10 @@ import type { TemplateResult } from 'lit';
 
 import { toggleEmbedCardCreateModal } from '../../../_common/components/embed-card/modal/embed-card-create-modal.js';
 import { toast } from '../../../_common/components/toast.js';
-import { textConversionConfigs } from '../../../_common/configs/text-conversion.js';
+import {
+  basicTextConversionConfigs,
+  textConversionConfigs,
+} from '../../../_common/configs/text-conversion.js';
 import {
   ArrowDownBigIcon,
   ArrowUpBigIcon,
@@ -116,6 +119,23 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
   maxHeight: 344,
   tooltipTimeout: 800,
   items: [
+    { groupName: 'Basic' },
+    ...basicTextConversionConfigs
+      .filter(
+        i =>
+          i.type &&
+          [
+            'h1',
+            'h2',
+            'h3',
+            'text',
+            'bulleted',
+            'numbered',
+            'quote',
+            'divider',
+          ].includes(i.type)
+      )
+      .map(createConversionItem),
     { groupName: 'Task Types' },
     ...textConversionConfigs
       .filter(i => i.type && ['h1', 'h3', 'text'].includes(i.type))
