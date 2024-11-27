@@ -412,7 +412,7 @@ export class EdgelessBlockPortalNote extends EdgelessPortalBase<NoteBlockModel> 
       background: `var(${background ?? DEFAULT_NOTE_BACKGROUND_COLOR})`,
       border: `${borderSize}px ${
         borderStyle === StrokeStyle.Dash ? 'dashed' : borderStyle
-      } var(--affine-black-30)`,
+      } var(--affine-black)`,
       boxShadow: this._editing
         ? 'var(--affine-active-shadow)'
         : !shadowType

@@ -173,10 +173,12 @@ export function createConversionItem(
       switch (name) {
         case 'Major Step':
           background = '--affine-note-background-blue';
+          borderSize = 2;
+          borderStyle = StrokeStyle.Solid;
           break;
         case 'Minor Step':
           background = '--affine-note-background-white';
-          borderSize = 4;
+          borderSize = 2;
           borderStyle = StrokeStyle.Solid;
           break;
         case 'Automation Step':

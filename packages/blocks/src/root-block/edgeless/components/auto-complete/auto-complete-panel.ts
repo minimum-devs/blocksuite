@@ -395,11 +395,13 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     switch (subtype) {
       case 'note.major':
         background = '--affine-note-background-blue';
+        borderSize = 2;
+        borderStyle = StrokeStyle.Solid;
         blockType = 'h1';
         break;
       case 'note.minor':
         background = '--affine-note-background-white';
-        borderSize = 4;
+        borderSize = 2;
         borderStyle = StrokeStyle.Solid;
         blockType = 'h3';
         break;
