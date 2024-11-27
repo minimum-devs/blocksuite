@@ -30,7 +30,7 @@ export class ParagraphBlockService<
 
   placeholderGenerator: (model: ParagraphBlockModel) => string = model => {
     if (model.type === 'text') {
-      return '';
+      return 'Click here to start writing or type / for more';
     }
 
     const placeholders = {
